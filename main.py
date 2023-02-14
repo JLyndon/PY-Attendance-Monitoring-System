@@ -43,13 +43,44 @@ class App(customtkinter.CTk):
 
 
         self.scrollable_frame = customtkinter.CTkScrollableFrame(self, label_text="Masterlist")
-        self.scrollable_frame.grid(row=0, column=1, padx=(15, 15), pady=(12, 0), sticky="nsew")
-        self.scrollable_frame.grid_columnconfigure(0, weight=1)
+        self.scrollable_frame.grid(row=0, column=1, padx=(15, 15), pady=(12, 0), columnspan=2, sticky="nsew")
+        self.scrollable_frame.grid_columnconfigure(0, weight=0)
         self.scrollable_frame_attendees = []
         for i in range(10):
-            attendees = customtkinter.CTkCheckBox(master=self.scrollable_frame, text=f"Student {i}")
-            attendees.grid(row=i, column=0, pady=(20, 0), padx=10)
+            name = ["John C. Doe", "Wrygwyn C. Crownwell"]
+            if i % 2 == 0:
+                attendees = customtkinter.CTkCheckBox(master=self.scrollable_frame, text=f"{name[0]} {i}")
+            else:
+                attendees = customtkinter.CTkCheckBox(master=self.scrollable_frame, text=f"{name[1]} {i}")
+            attendees.grid(row=i, column=0, pady=(20, 0), padx=(25, 150), sticky="w")
+            section = customtkinter.CTkLabel(self.scrollable_frame, text="BSCOE 2-6")
+            section.grid(row=i, column=1, pady=(20, 0), padx=(5, 30))
+            status = customtkinter.CTkLabel(self.scrollable_frame, text="Regular", text_color="#78EC6C")
+            status.grid(row=i, column=2, pady=(20, 0), padx=(5, 15))
             self.scrollable_frame_attendees.append(attendees)
+            self.scrollable_frame_attendees.append(section)
+            self.scrollable_frame_attendees.append(status)
+
+        self.edit_masterlist_frame1 = customtkinter.CTkFrame(self)
+        self.edit_masterlist_frame1.grid(row=1, column=1, padx=(15, 5), pady=(12, 0), sticky="nsew")
+        self.edit_masterlist_frame1.grid_columnconfigure(1, weight=0)
+
+        self.add_button = customtkinter.CTkButton(self.edit_masterlist_frame1, text="Add")
+        self.add_button.grid(row=1, column=1, padx=(20, 20), pady=20, sticky="nsew")
+
+        self.clear_button = customtkinter.CTkButton(self.edit_masterlist_frame1, text="Add")
+        self.clear_button.grid(row=1, column=2, padx=(20, 20), pady=20, sticky="nsew")
+
+        self.edit_masterlist_frame2 = customtkinter.CTkFrame(self)
+        self.edit_masterlist_frame2.grid(row=1, column=2, padx=(5, 15), pady=(12, 0), sticky="nsew")
+        self.edit_masterlist_frame2.grid_columnconfigure(2, weight=0)
+        
+        self.update_button = customtkinter.CTkButton(self.edit_masterlist_frame2, text="Update")
+        self.update_button.grid(row=1, column=1, padx=(20, 20), pady=20)
+
+        self.delete_button = customtkinter.CTkButton(self.edit_masterlist_frame2, text="Delete")
+        self.delete_button.grid(row=1, column=2, padx=(20, 20), pady=20)
+
 
         # self.sidebar_button_1.configure(state="disabled")
 
