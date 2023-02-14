@@ -1,5 +1,6 @@
 import tkinter
 from tkinter import messagebox
+from tkinter import ttk
 import customtkinter
 import sqlite3 
 
@@ -7,7 +8,7 @@ customtkinter.set_appearance_mode("Dark") # Set to Dark mode
 customtkinter.set_default_color_theme("dark-blue")  # Set 'dark-blue' theme
 
 
-class App(customtkinter.CTk):
+class App(customtkinter.CTk, tkinter.Tk):
     def __init__(self):
         super().__init__()
 
@@ -34,7 +35,7 @@ class App(customtkinter.CTk):
         self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=40)
         self.appearance_mode_label = customtkinter.CTkLabel(self.sidebar_frame, text="Appearance Mode:", anchor="w")
         self.appearance_mode_label.grid(row=5, column=0, padx=20, pady=(10, 0))
-        self.appearance_mode_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["Light", "Dark", "System"], command=self.change_appearance_mode_event)
+        self.appearance_mode_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["Dark", "Light", "System"], command=self.change_appearance_mode_event)
         self.appearance_mode_optionemenu.grid(row=6, column=0, padx=20, pady=(10, 10))
         self.scaling_label = customtkinter.CTkLabel(self.sidebar_frame, text="UI Scaling:", anchor="w")
         self.scaling_label.grid(row=7, column=0, padx=20, pady=(10, 0))
@@ -42,48 +43,71 @@ class App(customtkinter.CTk):
         self.scaling_optionemenu.grid(row=8, column=0, padx=20, pady=(10, 20))
 
 
-        self.scrollable_frame = customtkinter.CTkScrollableFrame(self, label_text="Masterlist")
-        self.scrollable_frame.grid(row=0, column=1, padx=(15, 15), pady=(12, 0), columnspan=2, sticky="nsew")
-        self.scrollable_frame.grid_columnconfigure(0, weight=0)
-        self.scrollable_frame_attendees = []
-        for i in range(10):
-            name = ["John C. Doe", "Wrygwyn C. Crownwell"]
-            if i % 2 == 0:
-                attendees = customtkinter.CTkCheckBox(master=self.scrollable_frame, text=f"{name[0]} {i}")
-            else:
-                attendees = customtkinter.CTkCheckBox(master=self.scrollable_frame, text=f"{name[1]} {i}")
-            attendees.grid(row=i, column=0, pady=(20, 0), padx=(25, 150), sticky="w")
-            section = customtkinter.CTkLabel(self.scrollable_frame, text="BSCOE 2-6")
-            section.grid(row=i, column=1, pady=(20, 0), padx=(5, 30))
-            status = customtkinter.CTkLabel(self.scrollable_frame, text="Regular", text_color="#78EC6C")
-            status.grid(row=i, column=2, pady=(20, 0), padx=(5, 15))
-            self.scrollable_frame_attendees.append(attendees)
-            self.scrollable_frame_attendees.append(section)
-            self.scrollable_frame_attendees.append(status)
+        self.masterlist_frame = customtkinter.CTkFrame(self)
+        self.masterlist_frame.grid(row=0, column=1, padx=(15, 15), pady=(12, 0), columnspan=2, sticky="nsew")
+        self.masterlist_frame.grid_columnconfigure(0, weight=1)
+
+        self.masterlLabel_frame = customtkinter.CTkFrame(self)
+        self.masterlLabel_frame.grid(row=1, column=1, padx=(15, 15), pady=(10, 0), columnspan=2, sticky="nsew")
+        self.masterlLabel_frame.grid_columnconfigure(0, weight=1)
+
+        self.ml_label = customtkinter.CTkLabel(self.masterlist_frame, text="Masterlist")
+        self.ml_label.grid(row=0, column=0, padx=(15, 15), pady=0, sticky="n")
+
+        self.terminal_tree = ttk.Treeview(self)
+        self.terminal_tree.grid(row=1, column=1, padx=(15, 15), pady=(5, 0), columnspan=2, sticky=tkinter.NSEW)
+        self.terminal_tree["columns"] = ("1", "2", "3", "4", "5")
+        self.terminal_tree['show'] = 'headings'
+        self.terminal_tree.column("1", width=10, anchor='c')
+        self.terminal_tree.heading("1", text="Student No.")
+        self.terminal_tree.column("2", width=200, anchor='c')
+        self.terminal_tree.heading("2", text="Name")
+        self.terminal_tree.column("3", width=100, anchor='c')
+        self.terminal_tree.heading("3", text="Section")
+        self.terminal_tree.column("4", width=100, anchor='c')
+        self.terminal_tree.heading("4")
+        self.terminal_tree.column("5", width=100, anchor='c')
+        self.terminal_tree.heading("5", text="Status")
+
+        self.columnconfigure(2, weight=1) # column with treeview
+        self.rowconfigure(2, weight=1) # row with treeview  
+
 
         self.edit_masterlist_frame1 = customtkinter.CTkFrame(self)
-        self.edit_masterlist_frame1.grid(row=1, column=1, padx=(15, 5), pady=(12, 0), sticky="nsew")
-        self.edit_masterlist_frame1.grid_columnconfigure(1, weight=0)
+        self.edit_masterlist_frame1.grid(row=2, column=1, padx=(15, 5), pady=(12, 0), sticky="nsew")
+        self.edit_masterlist_frame1.grid_columnconfigure(1, weight=1)
 
         self.add_button = customtkinter.CTkButton(self.edit_masterlist_frame1, text="Add")
-        self.add_button.grid(row=1, column=1, padx=(20, 20), pady=20, sticky="nsew")
+        self.add_button.grid(row=1, column=1, padx=(20, 20), pady=13, sticky="w")
 
-        self.clear_button = customtkinter.CTkButton(self.edit_masterlist_frame1, text="Add")
-        self.clear_button.grid(row=1, column=2, padx=(20, 20), pady=20, sticky="nsew")
+        self.clear_button = customtkinter.CTkButton(self.edit_masterlist_frame1, text="Clear")
+        self.clear_button.grid(row=1, column=2, padx=(20, 20), pady=13, sticky="e")
 
         self.edit_masterlist_frame2 = customtkinter.CTkFrame(self)
-        self.edit_masterlist_frame2.grid(row=1, column=2, padx=(5, 15), pady=(12, 0), sticky="nsew")
-        self.edit_masterlist_frame2.grid_columnconfigure(2, weight=0)
-        
-        self.update_button = customtkinter.CTkButton(self.edit_masterlist_frame2, text="Update")
-        self.update_button.grid(row=1, column=1, padx=(20, 20), pady=20)
+        self.edit_masterlist_frame2.grid(row=2, column=2, padx=(5, 15), pady=(12, 0), sticky="nsew")
+        self.edit_masterlist_frame2.grid_columnconfigure(2, weight=1)
 
-        self.delete_button = customtkinter.CTkButton(self.edit_masterlist_frame2, text="Delete")
-        self.delete_button.grid(row=1, column=2, padx=(20, 20), pady=20)
+        self.update_button = customtkinter.CTkButton(self.edit_masterlist_frame2, text="Update", width=90)
+        self.update_button.grid(row=1, column=1, padx=(15, 5), pady=13, sticky="w")
+
+        self.update_button = customtkinter.CTkButton(self.edit_masterlist_frame2, text="Sort", width=90)
+        self.update_button.grid(row=1, column=2, padx=(5, 5), pady=13, sticky="w")
+
+        self.delete_button = customtkinter.CTkButton(self.edit_masterlist_frame2, text="Delete", fg_color= "dark red", width=90)
+        self.delete_button.grid(row=1, column=3, padx=(5, 15), pady=13, sticky="e")
 
 
         # self.sidebar_button_1.configure(state="disabled")
 
+        # self.tree = ttk.Treeview(self.masterlist_frame, columns=(1, 2, 3, 4), show="headings")
+        # self.tree.heading("1", text="No.")
+        # self.tree.column("1", width=75)
+        # self.tree.heading("2", text="Name")
+        # self.tree.column("2", width=75)
+        # self.tree.heading("3", text="Section")
+        # self.tree.column("3", width=75)
+        # self.tree.heading("4", text="Status")
+        # self.tree.column("4", width=75)
 
         # databs = sqlite3.connect("Course_Attendance.db")
         # databs.execute("CREATE TABLE IF NOT EXISTS ATTENDANCE (No. Integer, Name Text, Course Text, Attendace Text, Date Text)")
@@ -178,8 +202,8 @@ class App(customtkinter.CTk):
         # self.scrollable_frame_switches[0].select()
         # self.scrollable_frame_switches[4].select()
         # self.radio_button_3.configure(state="disabled")
-        # self.appearance_mode_optionemenu.set("Dark")
-        # self.scaling_optionemenu.set("100%")
+        self.appearance_mode_optionemenu.set("Dark")
+        self.scaling_optionemenu.set("100%")
         # self.optionmenu_1.set("CTkOptionmenu")
         # self.combobox_1.set("CTkComboBox")
         # self.slider_1.configure(command=self.progressbar_2.set)
@@ -189,6 +213,17 @@ class App(customtkinter.CTk):
         # self.textbox.insert("0.0", "CTkTextbox\n\n" + "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
         # self.seg_button_1.configure(values=["CTkSegmentedButton", "Value 2", "Value 3"])
         # self.seg_button_1.set("Value 2")
+
+    # def create_tree(self):
+    #     columns = ('first_name', 'last_name', 'email')
+    #     tree = ttk.Treeview(self, columns=columns, show='headings')
+
+    #     # define headings
+    #     tree.heading('first_name', text='First Name')
+    #     tree.heading('last_name', text='Last Name')
+    #     tree.heading('email', text='Email')
+
+    #     return tree
 
     def open_input_dialog_event(self):
         dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="CTkInputDialog")
