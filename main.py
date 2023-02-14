@@ -34,14 +34,29 @@ class App(customtkinter.CTk):
         self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=40)
         self.appearance_mode_label = customtkinter.CTkLabel(self.sidebar_frame, text="Appearance Mode:", anchor="w")
         self.appearance_mode_label.grid(row=5, column=0, padx=20, pady=(10, 0))
-        self.appearance_mode_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["Light", "Dark", "System"],
-                                                                       command=self.change_appearance_mode_event)
+        self.appearance_mode_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["Light", "Dark", "System"], command=self.change_appearance_mode_event)
         self.appearance_mode_optionemenu.grid(row=6, column=0, padx=20, pady=(10, 10))
         self.scaling_label = customtkinter.CTkLabel(self.sidebar_frame, text="UI Scaling:", anchor="w")
         self.scaling_label.grid(row=7, column=0, padx=20, pady=(10, 0))
-        self.scaling_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["80%", "90%", "100%", "110%", "120%"],
-                                                               command=self.change_scaling_event)
+        self.scaling_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["80%", "90%", "100%", "110%", "120%"], command=self.change_scaling_event)
         self.scaling_optionemenu.grid(row=8, column=0, padx=20, pady=(10, 20))
+
+
+        self.scrollable_frame = customtkinter.CTkScrollableFrame(self, label_text="Masterlist")
+        self.scrollable_frame.grid(row=0, column=1, padx=(15, 15), pady=(12, 0), sticky="nsew")
+        self.scrollable_frame.grid_columnconfigure(0, weight=1)
+        self.scrollable_frame_attendees = []
+        for i in range(10):
+            attendees = customtkinter.CTkCheckBox(master=self.scrollable_frame, text=f"Student {i}")
+            attendees.grid(row=i, column=0, pady=(20, 0), padx=10)
+            self.scrollable_frame_attendees.append(attendees)
+
+        # self.sidebar_button_1.configure(state="disabled")
+
+
+        # databs = sqlite3.connect("Course_Attendance.db")
+        # databs.execute("CREATE TABLE IF NOT EXISTS ATTENDANCE (No. Integer, Name Text, Course Text, Attendace Text, Date Text)")
+        # cursor = databs.cursor()
 
         # # create main entry and button
         # self.entry = customtkinter.CTkEntry(self, placeholder_text="CTkEntry")
