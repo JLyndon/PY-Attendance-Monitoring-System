@@ -32,7 +32,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
         self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="Schedule", command=self.records)
         self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
-        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Import", command=self.sidebar_button_event)
+        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Import", command=self.get_focused_data)
         self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=40)
         self.appearance_mode_label = customtkinter.CTkLabel(self.sidebar_frame, text="Appearance Mode:", anchor="w")
         self.appearance_mode_label.grid(row=5, column=0, padx=20, pady=(10, 0))
@@ -61,10 +61,10 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.terminal_tree['show'] = 'headings'
         self.terminal_tree.column("1", width=10, anchor='c')
         self.terminal_tree.heading("1", text="Student No.")
-        self.terminal_tree.column("2", width=200, anchor='c')
+        self.terminal_tree.column("2", width=200, anchor='w')
         self.terminal_tree.heading("2", text="Name")
         self.terminal_tree.column("3", width=100, anchor='c')
-        self.terminal_tree.heading("3", text="Section")
+        self.terminal_tree.heading("3", text="Course Year & Section")
         self.terminal_tree.column("4", width=100, anchor='c')
         self.terminal_tree.heading("4")
         self.terminal_tree.column("5", width=100, anchor='c')
@@ -117,7 +117,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.update_button = customtkinter.CTkButton(self.edit_masterlist_frame2, text="Sort", width=90)
         self.update_button.grid(row=1, column=2, padx=(5, 5), pady=13, sticky="w")
 
-        self.delete_button = customtkinter.CTkButton(self.edit_masterlist_frame2, text="Delete", fg_color= "dark red", width=90)
+        self.delete_button = customtkinter.CTkButton(self.edit_masterlist_frame2, text="Delete", fg_color= "dark red", width=90, command=self.delete_student)
         self.delete_button.grid(row=1, column=3, padx=(5, 15), pady=13, sticky="e")
 
 
@@ -235,16 +235,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         # self.seg_button_1.configure(values=["CTkSegmentedButton", "Value 2", "Value 3"])
         # self.seg_button_1.set("Value 2")
 
-    # def create_tree(self):
-    #     columns = ('first_name', 'last_name', 'email')
-    #     tree = ttk.Treeview(self, columns=columns, show='headings')
 
-    #     # define headings
-    #     tree.heading('first_name', text='First Name')
-    #     tree.heading('last_name', text='Last Name')
-    #     tree.heading('email', text='Email')
-
-    #     return tree
     def masterlist(self):
         self.terminal_tree.grid()
         self.masterlist_frame.grid()
@@ -285,6 +276,26 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.terminal_tree.delete(*self.terminal_tree.get_children())
         for item in self.fetchdb():
             self.terminal_tree.insert("", END, values=item)
+    
+    def get_focused_data(self):
+        self.selected_row = self.terminal_tree.focus()
+        self.treeview_data = self.terminal_tree.item(self.selected_row)
+        self.rows = self.treeview_data["values"]
+        return self.rows
+
+    def int_to_str(self, value):
+        new_list = []
+        for item in value:
+            new_list.append(str(item))
+        return new_list
+
+    def delete_student(self):
+        self.delete_item = self.get_focused_data()
+        self.convert_list = self.int_to_str(self.delete_item)
+        cursor.execute("DELETE FROM ATTENDANCE WHERE StudentNum=?", [self.convert_list[0],])
+        databs.commit()
+        messagebox.showwarning(title="AKASHIC", message="Student profile has been deleted")
+        self.display_data_treeview()
 
     def open_input_dialog_event(self):
         dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="CTkInputDialog")
