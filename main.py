@@ -15,7 +15,7 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         # Main Window
         self.title("AKASHIC - Attendance Monitoring")
-        self.geometry(f"{1100}x{600}")
+        self.geometry(f"{1050}x{600}")
 
         # Configure grid layout (4x4)
         self.grid_columnconfigure(1, weight=1)
@@ -348,11 +348,14 @@ class App(customtkinter.CTk, tkinter.Tk):
 
     def delete_student(self):
         self.delete_item = self.get_focused_data()
-        self.convert_list = self.int_to_str(self.delete_item)
-        if (messagebox.askyesno(title="AKASHIC", message=f"Student {self.convert_list[1]} will be deleted. Do want to proceed?")) == True:
-            cursor.execute("DELETE FROM ATTENDANCE WHERE StudentNum=?", [self.convert_list[0],])
-            databs.commit()
-            self.display_data_treeview()
+        if (self.delete_item != ""):
+            self.convert_list = self.int_to_str(self.delete_item)
+            if (messagebox.askyesno(title="AKASHIC", message=f"Student {self.convert_list[1]} will be deleted. Do want to proceed?")) == True:
+                cursor.execute("DELETE FROM ATTENDANCE WHERE StudentNum=?", [self.convert_list[0],])
+                databs.commit()
+                self.display_data_treeview()
+        else:
+            messagebox.showwarning(title="AKASHIC", message="Tip: Click on an item you want to delete on the table above")
 
     def selection_sort_data(self, itemsList):
         n = len(itemsList)
