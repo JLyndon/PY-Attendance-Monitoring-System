@@ -136,7 +136,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.number_of_students = customtkinter.CTkLabel(self.summary_details, text="Number of Students Enrolled: ")
         self.number_of_students.grid(row=1, column=0, padx=(15, 15), pady=(50, 0), sticky="nw")
 
-        self.blank_space = customtkinter.CTkLabel(self.summary_details, text="                                           ")
+        self.blank_space = customtkinter.CTkLabel(self.summary_details, text="           ")
         self.blank_space.grid(row=1, column=1, padx=(15, 15), pady=(50, 0), sticky="nsew") 
 
         self.total_numeric = customtkinter.CTkLabel(self.summary_details, text="0")
@@ -153,9 +153,9 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.irreg_numeric.grid(row=3, column=3, padx=(15, 15), pady=(0, 0), sticky="nsew") 
 
         self.transferee_students = customtkinter.CTkLabel(self.summary_details, text="Transferee Students: ")
-        self.transferee_students.grid(row=4, column=0, padx=(15, 15), pady=(0, 15), sticky="nw")
+        self.transferee_students.grid(row=4, column=0, padx=(15, 15), pady=(0, 18), sticky="nw")
         self.transferee_numeric = customtkinter.CTkLabel(self.summary_details, text="0")
-        self.transferee_numeric.grid(row=4, column=3, padx=(15, 15), pady=(0, 15), sticky="nsew")  
+        self.transferee_numeric.grid(row=4, column=3, padx=(15, 15), pady=(0, 18), sticky="nsew")  
 
 
         # Frame for Update panel (contains entry with data from databs)
@@ -190,7 +190,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.confirm_update_yes = customtkinter.CTkButton(self.update_panel_frame, text="Confirm", width=100)
         self.confirm_update_yes.grid(row=4, column=0, padx=(20, 10), pady=(0, 10), sticky="nsew")
 
-        self.confirm_update_no = customtkinter.CTkButton(self.update_panel_frame, text="Cancel")
+        self.confirm_update_no = customtkinter.CTkButton(self.update_panel_frame, text="Cancel", command=self.cancel_update)
         self.confirm_update_no.grid(row=4, column=1, padx=(10, 20), pady=(0, 10), sticky="nsew")
 
         # self.sidebar_button_1.configure(state="disabled")
@@ -297,7 +297,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.appearance_mode_optionemenu.set("Dark")
         self.scaling_optionemenu.set("100%")
         self.display_data_treeview()
-        self.summary_details.grid_remove()
+        self.update_panel_frame.grid_remove()
         # self.optionmenu_1.set("CTkOptionmenu")
         # self.combobox_1.set("CTkComboBox")
         # self.slider_1.configure(command=self.progressbar_2.set)
@@ -433,12 +433,28 @@ class App(customtkinter.CTk, tkinter.Tk):
     def update_panel(self):
         self.update_item = self.get_focused_data()
         if (self.update_item != ""):
-            self.update_name_entry.insert(0, self.update_item[1])
-            self.update_stnum_entry.insert(0, self.update_item[0])
-            self.update_section_entry.insert(0, self.update_item[2])
-            self.update_status_option.set(self.update_item[4])
+            self.summary_details.grid_remove()
+            self.update_panel_frame.grid()
+
+            if self.update_item != [self.update_stnum_entry.get(), self.update_name_entry.get(), self.update_section_entry.get(), '', self.update_status_option.get()]:
+                self.remove_view_content()
+                self.update_name_entry.insert(0, self.update_item[1])
+                self.update_stnum_entry.insert(0, self.update_item[0])
+                self.update_section_entry.insert(0, self.update_item[2])
+                self.update_status_option.set(self.update_item[4])
         else:
             messagebox.showwarning(title="AKASHIC", message="Tip: Click on an item you want to update on the table above")
+    
+    def cancel_update(self):
+        self.update_panel_frame.grid_remove()
+        self.summary_details.grid()
+        self.remove_view_content()
+
+    def remove_view_content(self):
+        self.update_name_entry.delete(0, END)
+        self.update_section_entry.delete(0, END)
+        self.update_stnum_entry.delete(0, END)
+        self.update_status_option.set(self.status_option._values[0])
 
     def open_input_dialog_event(self):
         dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="CTkInputDialog")
