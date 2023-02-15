@@ -292,10 +292,10 @@ class App(customtkinter.CTk, tkinter.Tk):
     def delete_student(self):
         self.delete_item = self.get_focused_data()
         self.convert_list = self.int_to_str(self.delete_item)
-        cursor.execute("DELETE FROM ATTENDANCE WHERE StudentNum=?", [self.convert_list[0],])
-        databs.commit()
-        messagebox.showwarning(title="AKASHIC", message="Student profile has been deleted")
-        self.display_data_treeview()
+        if (messagebox.askyesno(title="AKASHIC", message=f"Student {self.convert_list[1]} will be deleted. Do want to proceed?")) == True:
+            cursor.execute("DELETE FROM ATTENDANCE WHERE StudentNum=?", [self.convert_list[0],])
+            databs.commit()
+            self.display_data_treeview()
 
     def open_input_dialog_event(self):
         dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="CTkInputDialog")
