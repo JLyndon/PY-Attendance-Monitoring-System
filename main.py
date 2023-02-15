@@ -78,10 +78,10 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.edit_masterlist_frame1.grid(row=2, column=1, padx=(15, 5), pady=(12, 0), sticky="nsew")
         self.edit_masterlist_frame1.grid_columnconfigure(1, weight=1)
 
-        self.add_button = customtkinter.CTkButton(self.edit_masterlist_frame1, text="Add")
+        self.add_button = customtkinter.CTkButton(self.edit_masterlist_frame1, text="Add", command=self.add_student)
         self.add_button.grid(row=1, column=1, padx=(20, 20), pady=13, sticky="w")
 
-        self.clear_button = customtkinter.CTkButton(self.edit_masterlist_frame1, text="Clear")
+        self.clear_button = customtkinter.CTkButton(self.edit_masterlist_frame1, text="Clear", command=self.clear_entry)
         self.clear_button.grid(row=1, column=2, padx=(20, 20), pady=13, sticky="e")
 
 
@@ -96,11 +96,11 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.name_entry = customtkinter.CTkEntry(self.entry_frame, placeholder_text="Name")
         self.name_entry.grid(row=0, column=0, padx=(20, 20), pady=(40, 5), sticky="nsew")
 
-        self.name_entry = customtkinter.CTkEntry(self.entry_frame, placeholder_text="Student Number")
-        self.name_entry.grid(row=1, column=0, padx=(20, 20), pady=5, sticky="nsew")
+        self.stnum_entry = customtkinter.CTkEntry(self.entry_frame, placeholder_text="Student Number")
+        self.stnum_entry.grid(row=1, column=0, padx=(20, 20), pady=5, sticky="nsew")
 
-        self.name_entry = customtkinter.CTkEntry(self.entry_frame, placeholder_text="Course Year & Section")
-        self.name_entry.grid(row=2, column=0, padx=(20, 20), pady=(5, 10), sticky="nsew")
+        self.section_entry = customtkinter.CTkEntry(self.entry_frame, placeholder_text="Course Year & Section")
+        self.section_entry.grid(row=2, column=0, padx=(20, 20), pady=(5, 10), sticky="nsew")
 
         self.status_option = customtkinter.CTkOptionMenu(self.entry_frame, values=["Regular", "Irregular", "Withdrawn", "Dropped", "Transferee"])
         self.status_option.grid(row=3, column=0, padx=20, pady=(5, 20), sticky="nsew")
@@ -257,6 +257,22 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.edit_masterlist_frame1.grid_remove()
         self.edit_masterlist_frame2.grid_remove()
         self.masterlLabel_frame.grid_remove()
+    
+    def clear_entry(self):
+        self.name_entry.delete(0, END)
+        self.section_entry.delete(0, END)
+        self.stnum_entry.delete(0, END)
+        self.status_option.set(self.status_option._values[0])
+    
+    def add_student(self):
+        if (self.name_entry.get()=="" or self.section_entry.get()=="" or self.stnum_entry.get()==""):
+            messagebox.showerror(title="Error", message="Please complete the form to proceed")
+        else:
+            student_data = [self.stnum_entry.get(), self.name_entry.get(), self.section_entry.get(), "", self.status_option.get()]
+            cursor.execute("INSERT INTO ATTENDANCE VALUES(?,?,?,?,?)", student_data)
+            databs.commit()
+            messagebox.showinfo(title="AKASHIC", message="Student has been listed")
+            self.clear_entry()
 
     def open_input_dialog_event(self):
         dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="CTkInputDialog")
@@ -277,7 +293,7 @@ class App(customtkinter.CTk, tkinter.Tk):
 
 databs = sqlite3.connect("Course_Attendance.db")
 cursor = databs.cursor()
-cursor.execute("CREATE TABLE IF NOT EXISTS ATTENDANCE (StudentNum Integer, Name Text, Course Text, Attendace Text, Date Text)")
+cursor.execute("CREATE TABLE IF NOT EXISTS ATTENDANCE (StudentNum Integer, Name Text, CourseYS Text, Space Text, Status Text)")
 
 if __name__ == "__main__":
     app = App()
