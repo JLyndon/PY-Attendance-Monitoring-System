@@ -13,16 +13,16 @@ class App(customtkinter.CTk, tkinter.Tk):
     def __init__(self):
         super().__init__()
 
-        # Window
+        # Main Window
         self.title("AKASHIC - Attendance Monitoring")
         self.geometry(f"{1100}x{600}")
 
-        # configure grid layout (4x4)
+        # Configure grid layout (4x4)
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure((2, 3), weight=0)
         self.grid_rowconfigure((0, 1, 2, 3), weight=1)
 
-        # create sidebar frame with widgets
+        # Sidebar Frame with Widgets
         self.sidebar_frame = customtkinter.CTkFrame(self, width=150, corner_radius=0)
         self.sidebar_frame.grid(row=0, column=0, rowspan=5, sticky="nsew")
         self.sidebar_frame.grid_rowconfigure(4, weight=1)
@@ -44,6 +44,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.scaling_optionemenu.grid(row=8, column=0, padx=20, pady=(10, 20))
 
 
+        # Frames for Label and Layout purposes
         self.masterlist_frame = customtkinter.CTkFrame(self)
         self.masterlist_frame.grid(row=0, column=1, padx=(15, 15), pady=(12, 0), columnspan=2, sticky="nsew")
         self.masterlist_frame.grid_columnconfigure(0, weight=1)
@@ -55,6 +56,8 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.ml_label = customtkinter.CTkLabel(self.masterlist_frame, text="MASTERLIST\nCOURSE YEAR SECTION - CMPE101")
         self.ml_label.grid(row=0, column=0, padx=(15, 15), pady=(8, 0), sticky="n")
 
+
+        # Treeview: Displays data from database
         self.terminal_tree = ttk.Treeview(self)
         self.terminal_tree.grid(row=1, column=1, padx=(15, 15), pady=(5, 0), columnspan=2, sticky=tkinter.NSEW)
         self.terminal_tree["columns"] = ("1", "2", "3", "4", "5")
@@ -74,6 +77,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.rowconfigure(2, weight=1) # row with treeview  
 
 
+        # Frame for Treeview editing tools (Left Side)
         self.edit_masterlist_frame1 = customtkinter.CTkFrame(self)
         self.edit_masterlist_frame1.grid(row=2, column=1, padx=(15, 5), pady=(12, 0), sticky="nsew")
         self.edit_masterlist_frame1.grid_columnconfigure(1, weight=1)
@@ -106,13 +110,14 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.status_option.grid(row=3, column=0, padx=20, pady=(5, 20), sticky="nsew")
 
 
-        # Buttons for Organizing Treeview Contents
+        # Frame for Treeview editing tools (Right Side)
         self.edit_masterlist_frame2 = customtkinter.CTkFrame(self)
         self.edit_masterlist_frame2.grid(row=2, column=2, padx=(5, 15), pady=(12, 0), sticky="nsew")
         self.edit_masterlist_frame2.grid_columnconfigure(2, weight=1)
 
+        # Buttons for Organizing Treeview Contents
         self.update_button = customtkinter.CTkButton(self.edit_masterlist_frame2, text="Sort", width=90, command=self.sort_data_entries)
-        self.update_button.grid(row=1, column=1, padx=(15, 5), pady=13, sticky="w")
+        self.update_button.grid(row=1, column=0, padx=(15, 5), pady=13, sticky="w")
 
         self.update_button = customtkinter.CTkButton(self.edit_masterlist_frame2, text="Update", width=90)
         self.update_button.grid(row=1, column=2, padx=(5, 5), pady=13, sticky="e")
@@ -120,6 +125,37 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.delete_button = customtkinter.CTkButton(self.edit_masterlist_frame2, text="Delete", fg_color= "dark red", width=90, command=self.delete_student)
         self.delete_button.grid(row=1, column=3, padx=(5, 15), pady=13, sticky="e")
 
+        # Text Summary of Treeview Data
+        self.summary_details = customtkinter.CTkFrame(self.edit_masterlist_frame2)
+        self.summary_details.grid(row=2, column=0, padx=(15, 15), pady=(10, 0), columnspan=4, sticky="nsew")
+        self.edit_masterlist_frame2.grid_columnconfigure(0, weight=1)
+
+        self.summary_label = customtkinter.CTkLabel(self.summary_details, text="List Summary")
+        self.summary_label.place(relx=0.5, rely=0.1, anchor="center") 
+
+        self.number_of_students = customtkinter.CTkLabel(self.summary_details, text="Number of Students Enrolled: ")
+        self.number_of_students.grid(row=1, column=0, padx=(15, 15), pady=(50, 0), sticky="nw")
+
+        self.blank_space = customtkinter.CTkLabel(self.summary_details, text="                                           ")
+        self.blank_space.grid(row=1, column=1, padx=(15, 15), pady=(50, 0), sticky="nsew") 
+
+        self.total_numeric = customtkinter.CTkLabel(self.summary_details, text="0")
+        self.total_numeric.grid(row=1, column=3, padx=(15, 15), pady=(50, 0), sticky="nsew") 
+
+        self.regular_students = customtkinter.CTkLabel(self.summary_details, text="Regularly Enrolled Students: ")
+        self.regular_students.grid(row=2, column=0, padx=(15, 15), pady=(30, 0), sticky="nw")
+        self.regular_numeric = customtkinter.CTkLabel(self.summary_details, text="0")
+        self.regular_numeric.grid(row=2, column=3, padx=(15, 15), pady=(30, 0), sticky="nsew")  
+
+        self.irreg_students = customtkinter.CTkLabel(self.summary_details, text="Irregular Students: ")
+        self.irreg_students.grid(row=3, column=0, padx=(15, 15), pady=(0, 0), sticky="nw") 
+        self.irreg_numeric = customtkinter.CTkLabel(self.summary_details, text="0")
+        self.irreg_numeric.grid(row=3, column=3, padx=(15, 15), pady=(0, 0), sticky="nsew") 
+
+        self.transferee_students = customtkinter.CTkLabel(self.summary_details, text="Transferee Students: ")
+        self.transferee_students.grid(row=4, column=0, padx=(15, 15), pady=(0, 10), sticky="nw")
+        self.transferee_numeric = customtkinter.CTkLabel(self.summary_details, text="0")
+        self.transferee_numeric.grid(row=4, column=3, padx=(15, 15), pady=(0, 0), sticky="nsew")  
 
         # self.sidebar_button_1.configure(state="disabled")
 
@@ -276,7 +312,28 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.terminal_tree.delete(*self.terminal_tree.get_children())
         for item in self.fetchdb():
             self.terminal_tree.insert("", END, values=item)
-    
+        
+        self.summary_list = self.fetchdb()
+        self.total_students = 0
+        self.total_regular = 0
+        self.total_irregular = 0
+        self.total_transferee = 0
+        for data in self.summary_list:
+            if 'Regular' in data:
+                self.total_students += 1
+                self.total_regular += 1
+            elif 'Irregular' in data:
+                self.total_students += 1
+                self.total_irregular += 1
+            elif 'Transferee' in data:
+                self.total_students += 1
+                self.total_transferee += 1
+        
+        self.total_numeric.configure(text = self.total_students)
+        self.regular_numeric.configure(text=self.total_regular)
+        self.irreg_numeric.configure(text=self.total_irregular)
+        self.transferee_numeric.configure(text=self.total_transferee)
+
     def get_focused_data(self):
         self.selected_row = self.terminal_tree.focus()
         self.treeview_data = self.terminal_tree.item(self.selected_row)
@@ -344,11 +401,6 @@ class App(customtkinter.CTk, tkinter.Tk):
         new_scaling_float = int(new_scaling.replace("%", "")) / 100
         customtkinter.set_widget_scaling(new_scaling_float)
 
-    def sidebar_button_event(self):
-        print("sidebar_button click")
-
-    def sidebar_button_event(self):
-        print("sidebar_button click")
 
 databs = sqlite3.connect("Course_Attendance.db")
 cursor = databs.cursor()
