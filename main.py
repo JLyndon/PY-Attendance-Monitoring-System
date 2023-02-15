@@ -119,7 +119,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.update_button = customtkinter.CTkButton(self.edit_masterlist_frame2, text="Sort", width=90, command=self.sort_data_entries)
         self.update_button.grid(row=1, column=0, padx=(15, 5), pady=13, sticky="w")
 
-        self.update_button = customtkinter.CTkButton(self.edit_masterlist_frame2, text="Update", width=90)
+        self.update_button = customtkinter.CTkButton(self.edit_masterlist_frame2, text="Update", width=90, command=self.update_panel)
         self.update_button.grid(row=1, column=2, padx=(5, 5), pady=13, sticky="e")
 
         self.delete_button = customtkinter.CTkButton(self.edit_masterlist_frame2, text="Delete", fg_color= "dark red", width=90, command=self.delete_student)
@@ -322,10 +322,6 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.edit_masterlist_frame1.grid_remove()
         self.edit_masterlist_frame2.grid_remove()
         self.masterlLabel_frame.grid_remove()
-
-    def show_update_option(self):
-        self.summary_details.grid_remove()
-
     
     def clear_entry(self):
         self.name_entry.delete(0, END)
@@ -433,6 +429,16 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.terminal_tree.delete(*self.terminal_tree.get_children())
         for item in self.ordered_dataset:
             self.terminal_tree.insert("", END, values=item)
+
+    def update_panel(self):
+        self.update_item = self.get_focused_data()
+        if (self.update_item != ""):
+            self.update_name_entry.insert(0, self.update_item[1])
+            self.update_stnum_entry.insert(0, self.update_item[0])
+            self.update_section_entry.insert(0, self.update_item[2])
+            self.update_status_option.set(self.update_item[4])
+        else:
+            messagebox.showwarning(title="AKASHIC", message="Tip: Click on an item you want to update on the table above")
 
     def open_input_dialog_event(self):
         dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="CTkInputDialog")
