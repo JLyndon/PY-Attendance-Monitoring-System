@@ -224,6 +224,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         # self.radio_button_3.configure(state="disabled")
         self.appearance_mode_optionemenu.set("Dark")
         self.scaling_optionemenu.set("100%")
+        self.display_data_treeview()
         # self.optionmenu_1.set("CTkOptionmenu")
         # self.combobox_1.set("CTkComboBox")
         # self.slider_1.configure(command=self.progressbar_2.set)
@@ -273,6 +274,17 @@ class App(customtkinter.CTk, tkinter.Tk):
             databs.commit()
             messagebox.showinfo(title="AKASHIC", message="Student has been listed")
             self.clear_entry()
+            self.display_data_treeview()
+    
+    def fetchdb(self):
+        cursor.execute("SELECT * FROM ATTENDANCE")
+        datalist = cursor.fetchall()
+        return datalist
+    
+    def display_data_treeview(self):
+        self.terminal_tree.delete(*self.terminal_tree.get_children())
+        for item in self.fetchdb():
+            self.terminal_tree.insert("", END, values=item)
 
     def open_input_dialog_event(self):
         dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="CTkInputDialog")
@@ -294,6 +306,7 @@ class App(customtkinter.CTk, tkinter.Tk):
 databs = sqlite3.connect("Course_Attendance.db")
 cursor = databs.cursor()
 cursor.execute("CREATE TABLE IF NOT EXISTS ATTENDANCE (StudentNum Integer, Name Text, CourseYS Text, Space Text, Status Text)")
+
 
 if __name__ == "__main__":
     app = App()
