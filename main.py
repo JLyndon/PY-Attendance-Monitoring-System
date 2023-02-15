@@ -111,11 +111,11 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.edit_masterlist_frame2.grid(row=2, column=2, padx=(5, 15), pady=(12, 0), sticky="nsew")
         self.edit_masterlist_frame2.grid_columnconfigure(2, weight=1)
 
-        self.update_button = customtkinter.CTkButton(self.edit_masterlist_frame2, text="Update", width=90)
+        self.update_button = customtkinter.CTkButton(self.edit_masterlist_frame2, text="Sort", width=90)
         self.update_button.grid(row=1, column=1, padx=(15, 5), pady=13, sticky="w")
 
-        self.update_button = customtkinter.CTkButton(self.edit_masterlist_frame2, text="Sort", width=90)
-        self.update_button.grid(row=1, column=2, padx=(5, 5), pady=13, sticky="w")
+        self.update_button = customtkinter.CTkButton(self.edit_masterlist_frame2, text="Update", width=90)
+        self.update_button.grid(row=1, column=2, padx=(5, 5), pady=13, sticky="e")
 
         self.delete_button = customtkinter.CTkButton(self.edit_masterlist_frame2, text="Delete", fg_color= "dark red", width=90, command=self.delete_student)
         self.delete_button.grid(row=1, column=3, padx=(5, 15), pady=13, sticky="e")
@@ -296,6 +296,22 @@ class App(customtkinter.CTk, tkinter.Tk):
             cursor.execute("DELETE FROM ATTENDANCE WHERE StudentNum=?", [self.convert_list[0],])
             databs.commit()
             self.display_data_treeview()
+        
+    # def selection_sort_data(self, itemsList):
+    #     n = len(itemsList)
+    #     for i in range(n - 1): 
+    #         minValueIndex = i
+
+    #         for j in range( i + 1, n ):
+    #             if itemsList[j] < itemsList[minValueIndex] :
+    #                 minValueIndex = j
+
+    #         if minValueIndex != i :
+    #             temp = itemsList[i]
+    #             itemsList[i] = itemsList[minValueIndex]
+    #             itemsList[minValueIndex] = temp
+
+    #     return itemsList
 
     def open_input_dialog_event(self):
         dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="CTkInputDialog")
