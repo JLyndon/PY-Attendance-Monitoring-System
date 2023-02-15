@@ -116,8 +116,8 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.edit_masterlist_frame2.grid_columnconfigure(2, weight=1)
 
         # Buttons for Organizing Treeview Contents
-        self.update_button = customtkinter.CTkButton(self.edit_masterlist_frame2, text="Sort", width=90, command=self.sort_data_entries)
-        self.update_button.grid(row=1, column=0, padx=(15, 5), pady=13, sticky="w")
+        self.sort_button = customtkinter.CTkButton(self.edit_masterlist_frame2, text="Sort", width=90, command=self.sort_data_entries)
+        self.sort_button.grid(row=1, column=0, padx=(15, 5), pady=13, sticky="w")
 
         self.update_button = customtkinter.CTkButton(self.edit_masterlist_frame2, text="Update", width=90, command=self.update_panel)
         self.update_button.grid(row=1, column=2, padx=(5, 5), pady=13, sticky="e")
@@ -377,7 +377,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.rows = self.treeview_data["values"]
         return self.rows
 
-    def int_to_str(self, value):
+    def convert_int_to_str(self, value):
         new_list = []
         for item in value:
             new_list.append(str(item))
@@ -386,7 +386,7 @@ class App(customtkinter.CTk, tkinter.Tk):
     def delete_student(self):
         self.delete_item = self.get_focused_data()
         if (self.delete_item != ""):
-            self.convert_list = self.int_to_str(self.delete_item)
+            self.convert_list = self.convert_int_to_str(self.delete_item)
             if (messagebox.askyesno(title="AKASHIC", message=f"Student {self.convert_list[1]} will be deleted. Do want to proceed?")) == True:
                 cursor.execute("DELETE FROM ATTENDANCE WHERE StudentNum=?", [self.convert_list[0],])
                 databs.commit()
@@ -436,6 +436,17 @@ class App(customtkinter.CTk, tkinter.Tk):
             self.summary_details.grid_remove()
             self.update_panel_frame.grid()
 
+            # Disable all buttons except update
+            self.add_button.configure(state="disabled")
+            self.clear_button.configure(state="disabled")
+            self.sort_button.configure(state="disabled")
+            self.delete_button.configure(state="disabled")
+
+            self.name_entry.configure(state="disabled")
+            self.stnum_entry.configure(state="disabled")
+            self.section_entry.configure(state="disabled")
+            self.status_option.configure(state="disabled")
+
             if self.update_item != [self.update_stnum_entry.get(), self.update_name_entry.get(), self.update_section_entry.get(), '', self.update_status_option.get()]:
                 self.remove_view_content()
                 self.update_name_entry.insert(0, self.update_item[1])
@@ -445,10 +456,24 @@ class App(customtkinter.CTk, tkinter.Tk):
         else:
             messagebox.showwarning(title="AKASHIC", message="Tip: Click on an item you want to update on the table above")
     
+    def confirm_update(self):
+        return
+
     def cancel_update(self):
         self.update_panel_frame.grid_remove()
         self.summary_details.grid()
         self.remove_view_content()
+
+        # Reset other button features
+        self.add_button.configure(state="normal")
+        self.clear_button.configure(state="normal")
+        self.sort_button.configure(state="normal")
+        self.delete_button.configure(state="normal")
+
+        self.name_entry.configure(state="normal")
+        self.stnum_entry.configure(state="normal")
+        self.section_entry.configure(state="normal")
+        self.status_option.configure(state="normal")
 
     def remove_view_content(self):
         self.update_name_entry.delete(0, END)
