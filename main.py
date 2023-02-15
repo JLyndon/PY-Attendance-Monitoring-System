@@ -296,16 +296,6 @@ class App(customtkinter.CTk, tkinter.Tk):
             cursor.execute("DELETE FROM ATTENDANCE WHERE StudentNum=?", [self.convert_list[0],])
             databs.commit()
             self.display_data_treeview()
-    
-    def sort_data_entries(self):
-        self.unordered_dataset = self.fetchdb()
-        self.key_unordered_data = []
-        for data in self.unordered_dataset:
-            for specific in data:
-                if specific == data[1]:
-                    self.key_unordered_data.append(specific)
-        print(self.key_unordered_data)
-
 
     def selection_sort_data(self, itemsList):
         n = len(itemsList)
@@ -322,6 +312,22 @@ class App(customtkinter.CTk, tkinter.Tk):
                 itemsList[minValueIndex] = temp
 
         return itemsList
+    
+    def sort_data_entries(self):
+        self.unordered_dataset = self.fetchdb()
+        self.key_unordered_data = []
+        for data in self.unordered_dataset:
+            for specific in data:
+                if specific == data[1]:
+                    self.key_unordered_data.append(specific)
+
+        self.key_ordered_data = self.selection_sort_data(self.key_unordered_data)
+        self.ordered_dataset = []
+        for item in self.key_ordered_data:
+            for group in self.unordered_dataset:
+                if item in group:
+                    self.ordered_dataset.append(group)
+        print(self.ordered_dataset)
 
     def open_input_dialog_event(self):
         dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="CTkInputDialog")
