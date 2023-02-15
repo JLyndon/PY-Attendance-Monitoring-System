@@ -14,7 +14,7 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         # Window
         self.title("AKASHIC - Attendance Monitoring")
-        self.geometry(f"{1100}x{580}")
+        self.geometry(f"{1100}x{600}")
 
         # configure grid layout (4x4)
         self.grid_columnconfigure(1, weight=1)
@@ -51,8 +51,8 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.masterlLabel_frame.grid(row=1, column=1, padx=(15, 15), pady=(10, 0), columnspan=2, sticky="nsew")
         self.masterlLabel_frame.grid_columnconfigure(0, weight=1)
 
-        self.ml_label = customtkinter.CTkLabel(self.masterlist_frame, text="Masterlist")
-        self.ml_label.grid(row=0, column=0, padx=(15, 15), pady=0, sticky="n")
+        self.ml_label = customtkinter.CTkLabel(self.masterlist_frame, text="MASTERLIST\nCOURSE YEAR SECTION - CMPE101")
+        self.ml_label.grid(row=0, column=0, padx=(15, 15), pady=(8, 0), sticky="n")
 
         self.terminal_tree = ttk.Treeview(self)
         self.terminal_tree.grid(row=1, column=1, padx=(15, 15), pady=(5, 0), columnspan=2, sticky=tkinter.NSEW)
@@ -86,17 +86,23 @@ class App(customtkinter.CTk, tkinter.Tk):
         # Entry for Adding Treeview Contents
 
         self.entry_frame = customtkinter.CTkFrame(self.edit_masterlist_frame1)
-        self.entry_frame.grid(row=2, column=1, padx=(15, 15), pady=(12, 0), columnspan=2, sticky="nsew")
+        self.entry_frame.grid(row=2, column=1, padx=(15, 15), pady=(10, 0), columnspan=2, sticky="nsew")
         self.entry_frame.grid_columnconfigure(0, weight=1)
 
+        self.entry_label = customtkinter.CTkLabel(self.entry_frame, text="Student Information")
+        self.entry_label.place(relx=0.5, rely=0.1, anchor="center")
+
         self.name_entry = customtkinter.CTkEntry(self.entry_frame, placeholder_text="Name")
-        self.name_entry.grid(row=0, column=0, padx=(20, 20), pady=(13, 5), sticky="nsew")
+        self.name_entry.grid(row=0, column=0, padx=(20, 20), pady=(40, 5), sticky="nsew")
 
         self.name_entry = customtkinter.CTkEntry(self.entry_frame, placeholder_text="Student Number")
         self.name_entry.grid(row=1, column=0, padx=(20, 20), pady=5, sticky="nsew")
 
         self.name_entry = customtkinter.CTkEntry(self.entry_frame, placeholder_text="Course Year & Section")
         self.name_entry.grid(row=2, column=0, padx=(20, 20), pady=(5, 10), sticky="nsew")
+
+        self.status_option = customtkinter.CTkOptionMenu(self.entry_frame, values=["Regular", "Irregular", "Withdrawn", "Dropped", "Transferee"])
+        self.status_option.grid(row=3, column=0, padx=20, pady=(5, 20), sticky="nsew")
 
 
         # Buttons for Organizing Treeview Contents
