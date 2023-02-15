@@ -83,6 +83,23 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.clear_button = customtkinter.CTkButton(self.edit_masterlist_frame1, text="Clear")
         self.clear_button.grid(row=1, column=2, padx=(20, 20), pady=13, sticky="e")
 
+        # Entry for Adding Treeview Contents
+
+        self.entry_frame = customtkinter.CTkFrame(self.edit_masterlist_frame1)
+        self.entry_frame.grid(row=2, column=1, padx=(15, 15), pady=(12, 0), columnspan=2, sticky="nsew")
+        self.entry_frame.grid_columnconfigure(0, weight=1)
+
+        self.name_entry = customtkinter.CTkEntry(self.entry_frame, placeholder_text="Name")
+        self.name_entry.grid(row=0, column=0, padx=(20, 20), pady=(13, 5), sticky="nsew")
+
+        self.name_entry = customtkinter.CTkEntry(self.entry_frame, placeholder_text="Student Number")
+        self.name_entry.grid(row=1, column=0, padx=(20, 20), pady=5, sticky="nsew")
+
+        self.name_entry = customtkinter.CTkEntry(self.entry_frame, placeholder_text="Course Year & Section")
+        self.name_entry.grid(row=2, column=0, padx=(20, 20), pady=(5, 10), sticky="nsew")
+
+
+        # Buttons for Organizing Treeview Contents
         self.edit_masterlist_frame2 = customtkinter.CTkFrame(self)
         self.edit_masterlist_frame2.grid(row=2, column=2, padx=(5, 15), pady=(12, 0), sticky="nsew")
         self.edit_masterlist_frame2.grid_columnconfigure(2, weight=1)
@@ -108,10 +125,6 @@ class App(customtkinter.CTk, tkinter.Tk):
         # self.tree.column("3", width=75)
         # self.tree.heading("4", text="Status")
         # self.tree.column("4", width=75)
-
-        # databs = sqlite3.connect("Course_Attendance.db")
-        # databs.execute("CREATE TABLE IF NOT EXISTS ATTENDANCE (No. Integer, Name Text, Course Text, Attendace Text, Date Text)")
-        # cursor = databs.cursor()
 
         # # create main entry and button
         # self.entry = customtkinter.CTkEntry(self, placeholder_text="CTkEntry")
@@ -242,6 +255,9 @@ class App(customtkinter.CTk, tkinter.Tk):
     def sidebar_button_event(self):
         print("sidebar_button click")
 
+databs = sqlite3.connect("Course_Attendance.db")
+cursor = databs.cursor()
+cursor.execute("CREATE TABLE IF NOT EXISTS ATTENDANCE (StudentNum Integer, Name Text, Course Text, Attendace Text, Date Text)")
 
 if __name__ == "__main__":
     app = App()
