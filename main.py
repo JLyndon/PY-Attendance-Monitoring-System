@@ -160,29 +160,38 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         # Frame for Update panel (contains entry with data from databs)
         self.update_panel_frame = customtkinter.CTkFrame(self.edit_masterlist_frame2)
-        self.update_panel_frame.grid(row=2, column=0, padx=(15, 15), pady=(10, 0), columnspan=4, sticky="nsew")
+        self.update_panel_frame.grid(row=2, column=0, padx=(15, 15), pady=(5, 0), columnspan=4, sticky="nsew")
         self.update_panel_frame.grid_columnconfigure(0, weight=1)
 
+        # Entry Labels
         self.update_name_label = customtkinter.CTkLabel(self.update_panel_frame, text="Name: ")
-        self.update_name_label.place(relx=0.05, rely=0.27, anchor="w")
+        self.update_name_label.place(relx=0.05, rely=0.15, anchor="w")
         self.update_stnum_label = customtkinter.CTkLabel(self.update_panel_frame, text="Student No: ")
-        self.update_stnum_label.place(relx=0.05, rely=0.46, anchor="w")
+        self.update_stnum_label.place(relx=0.05, rely=0.34, anchor="w")
         self.update_section_label = customtkinter.CTkLabel(self.update_panel_frame, text="Section: ")
-        self.update_section_label.place(relx=0.05, rely=0.65, anchor="w")
+        self.update_section_label.place(relx=0.05, rely=0.51, anchor="w")
         self.update_status_label = customtkinter.CTkLabel(self.update_panel_frame, text="Status: ")
-        self.update_status_label.place(relx=0.05, rely=0.83, anchor="w")
+        self.update_status_label.place(relx=0.05, rely=0.69, anchor="w")
+
 
         self.update_name_entry = customtkinter.CTkEntry(self.update_panel_frame, placeholder_text="Name")
-        self.update_name_entry.grid(row=0, column=0, padx=(100, 10), pady=(20, 5), sticky="nsew")
+        self.update_name_entry.grid(row=0, column=0, padx=(95, 10), pady=(20, 5), columnspan=2, sticky="nsew")
 
         self.update_stnum_entry = customtkinter.CTkEntry(self.update_panel_frame, placeholder_text="Student Number")
-        self.update_stnum_entry.grid(row=1, column=0, padx=(100, 10), pady=(5, 5), sticky="nsew")
+        self.update_stnum_entry.grid(row=1, column=0, padx=(95, 10), pady=(5, 5), columnspan=2, sticky="nsew")
 
         self.update_section_entry = customtkinter.CTkEntry(self.update_panel_frame, placeholder_text="Course Year & Section")
-        self.update_section_entry.grid(row=2, column=0, padx=(100, 10), pady=(5, 5), sticky="nsew")
+        self.update_section_entry.grid(row=2, column=0, padx=(95, 10), pady=(5, 5),columnspan=2, sticky="nsew")
 
         self.update_status_option = customtkinter.CTkOptionMenu(self.update_panel_frame, values=["Regular", "Irregular", "Withdrawn", "Dropped", "Transferee"])
-        self.update_status_option.grid(row=3, column=0, padx=(100, 10), pady=(5, 20), sticky="nsew")
+        self.update_status_option.grid(row=3, column=0, padx=(95, 10), pady=(5, 15), columnspan=2, sticky="nsew")
+
+        # Buttons for Confirmation of edit
+        self.confirm_update_yes = customtkinter.CTkButton(self.update_panel_frame, text="Confirm", width=100)
+        self.confirm_update_yes.grid(row=4, column=0, padx=(20, 10), pady=(0, 10), sticky="nsew")
+
+        self.confirm_update_no = customtkinter.CTkButton(self.update_panel_frame, text="Cancel")
+        self.confirm_update_no.grid(row=4, column=1, padx=(10, 20), pady=(0, 10), sticky="nsew")
 
         # self.sidebar_button_1.configure(state="disabled")
 
