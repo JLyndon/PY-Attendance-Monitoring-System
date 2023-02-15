@@ -313,6 +313,7 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         return itemsList
     
+    # Implemented Selection Sort in sorting entries
     def sort_data_entries(self):
         self.unordered_dataset = self.fetchdb()
         self.key_unordered_data = []
@@ -327,7 +328,10 @@ class App(customtkinter.CTk, tkinter.Tk):
             for group in self.unordered_dataset:
                 if item in group:
                     self.ordered_dataset.append(group)
-        print(self.ordered_dataset)
+
+        self.terminal_tree.delete(*self.terminal_tree.get_children())
+        for item in self.ordered_dataset:
+            self.terminal_tree.insert("", END, values=item)
 
     def open_input_dialog_event(self):
         dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="CTkInputDialog")
