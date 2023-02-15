@@ -1,6 +1,7 @@
 import tkinter
 from tkinter import messagebox
 from tkinter import ttk
+from tkinter import *
 import customtkinter
 import sqlite3 
 
@@ -27,9 +28,9 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.sidebar_frame.grid_rowconfigure(4, weight=1)
         self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="AKASHIC", font=customtkinter.CTkFont(family="Impact", size=40, weight="normal"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
-        self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Records", command=self.sidebar_button_event)
+        self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Records", command=self.masterlist)
         self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
-        self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="Schedule", command=self.sidebar_button_event)
+        self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="Schedule", command=self.records)
         self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
         self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Import", command=self.sidebar_button_event)
         self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=40)
@@ -83,8 +84,8 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.clear_button = customtkinter.CTkButton(self.edit_masterlist_frame1, text="Clear")
         self.clear_button.grid(row=1, column=2, padx=(20, 20), pady=13, sticky="e")
 
-        # Entry for Adding Treeview Contents
 
+        # Entry for Adding Treeview Contents
         self.entry_frame = customtkinter.CTkFrame(self.edit_masterlist_frame1)
         self.entry_frame.grid(row=2, column=1, padx=(15, 15), pady=(10, 0), columnspan=2, sticky="nsew")
         self.entry_frame.grid_columnconfigure(0, weight=1)
@@ -243,6 +244,19 @@ class App(customtkinter.CTk, tkinter.Tk):
     #     tree.heading('email', text='Email')
 
     #     return tree
+    def masterlist(self):
+        self.terminal_tree.grid()
+        self.masterlist_frame.grid()
+        self.edit_masterlist_frame1.grid()
+        self.edit_masterlist_frame2.grid()
+        self.masterlLabel_frame.grid()
+
+    def records(self):
+        self.terminal_tree.grid_remove()
+        self.masterlist_frame.grid_remove()
+        self.edit_masterlist_frame1.grid_remove()
+        self.edit_masterlist_frame2.grid_remove()
+        self.masterlLabel_frame.grid_remove()
 
     def open_input_dialog_event(self):
         dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="CTkInputDialog")
