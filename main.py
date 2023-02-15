@@ -153,9 +153,36 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.irreg_numeric.grid(row=3, column=3, padx=(15, 15), pady=(0, 0), sticky="nsew") 
 
         self.transferee_students = customtkinter.CTkLabel(self.summary_details, text="Transferee Students: ")
-        self.transferee_students.grid(row=4, column=0, padx=(15, 15), pady=(0, 10), sticky="nw")
+        self.transferee_students.grid(row=4, column=0, padx=(15, 15), pady=(0, 15), sticky="nw")
         self.transferee_numeric = customtkinter.CTkLabel(self.summary_details, text="0")
-        self.transferee_numeric.grid(row=4, column=3, padx=(15, 15), pady=(0, 0), sticky="nsew")  
+        self.transferee_numeric.grid(row=4, column=3, padx=(15, 15), pady=(0, 15), sticky="nsew")  
+
+
+        # Frame for Update panel (contains entry with data from databs)
+        self.update_panel_frame = customtkinter.CTkFrame(self.edit_masterlist_frame2)
+        self.update_panel_frame.grid(row=2, column=0, padx=(15, 15), pady=(10, 0), columnspan=4, sticky="nsew")
+        self.update_panel_frame.grid_columnconfigure(0, weight=1)
+
+        self.update_name_label = customtkinter.CTkLabel(self.update_panel_frame, text="Name: ")
+        self.update_name_label.place(relx=0.05, rely=0.27, anchor="w")
+        self.update_stnum_label = customtkinter.CTkLabel(self.update_panel_frame, text="Student No: ")
+        self.update_stnum_label.place(relx=0.05, rely=0.46, anchor="w")
+        self.update_section_label = customtkinter.CTkLabel(self.update_panel_frame, text="Section: ")
+        self.update_section_label.place(relx=0.05, rely=0.65, anchor="w")
+        self.update_status_label = customtkinter.CTkLabel(self.update_panel_frame, text="Status: ")
+        self.update_status_label.place(relx=0.05, rely=0.83, anchor="w")
+
+        self.update_name_entry = customtkinter.CTkEntry(self.update_panel_frame, placeholder_text="Name")
+        self.update_name_entry.grid(row=0, column=0, padx=(100, 10), pady=(20, 5), sticky="nsew")
+
+        self.update_stnum_entry = customtkinter.CTkEntry(self.update_panel_frame, placeholder_text="Student Number")
+        self.update_stnum_entry.grid(row=1, column=0, padx=(100, 10), pady=(5, 5), sticky="nsew")
+
+        self.update_section_entry = customtkinter.CTkEntry(self.update_panel_frame, placeholder_text="Course Year & Section")
+        self.update_section_entry.grid(row=2, column=0, padx=(100, 10), pady=(5, 5), sticky="nsew")
+
+        self.update_status_option = customtkinter.CTkOptionMenu(self.update_panel_frame, values=["Regular", "Irregular", "Withdrawn", "Dropped", "Transferee"])
+        self.update_status_option.grid(row=3, column=0, padx=(100, 10), pady=(5, 20), sticky="nsew")
 
         # self.sidebar_button_1.configure(state="disabled")
 
@@ -261,6 +288,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.appearance_mode_optionemenu.set("Dark")
         self.scaling_optionemenu.set("100%")
         self.display_data_treeview()
+        self.summary_details.grid_remove()
         # self.optionmenu_1.set("CTkOptionmenu")
         # self.combobox_1.set("CTkComboBox")
         # self.slider_1.configure(command=self.progressbar_2.set)
@@ -285,6 +313,10 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.edit_masterlist_frame1.grid_remove()
         self.edit_masterlist_frame2.grid_remove()
         self.masterlLabel_frame.grid_remove()
+
+    def show_update_option(self):
+        self.summary_details.grid_remove()
+
     
     def clear_entry(self):
         self.name_entry.delete(0, END)
