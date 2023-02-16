@@ -345,6 +345,11 @@ class App(customtkinter.CTk, tkinter.Tk):
         datalist = cursor.fetchall()
         return datalist
     
+    def fetchupdates(self):
+        cursor_1.execute("SELECT * FROM UPDATES")
+        updatelist = cursor_1.fetchall()
+        return updatelist
+    
     def display_data_treeview(self):
         self.terminal_tree.delete(*self.terminal_tree.get_children())
         for item in self.fetchdb():
@@ -448,15 +453,29 @@ class App(customtkinter.CTk, tkinter.Tk):
             self.status_option.configure(state="disabled")
 
             if self.update_item != [self.update_stnum_entry.get(), self.update_name_entry.get(), self.update_section_entry.get(), '', self.update_status_option.get()]:
+                self.update_details = self.fetchupdates()
+                print(self.update_details)
+                # If focus is changed, remove temporary data from database
+                if (self.update_details != []) or (self.update_details != None):
+                    cursor_1.execute("DELETE FROM UPDATES WHERE Row=?", [1,])
+                    tempdata.commit()
                 self.remove_view_content()
                 self.update_name_entry.insert(0, self.update_item[1])
                 self.update_stnum_entry.insert(0, self.update_item[0])
                 self.update_section_entry.insert(0, self.update_item[2])
                 self.update_status_option.set(self.update_item[4])
+                
+                # Store temporary data every attempt of update
+                cursor_1.execute("INSERT INTO UPDATES VALUES(?,?,?,?,?,?)", [1, self.update_stnum_entry.get(), self.update_name_entry.get(), self.update_section_entry.get(), '', self.update_status_option.get()])
+                tempdata.commit()
+
+                self.update_details_1 = self.fetchupdates()
+                print(self.update_details_1)
         else:
             messagebox.showwarning(title="AKASHIC", message="Tip: Click on an item you want to update on the table above")
     
     def confirm_update(self):
+        self.updated_entries = [self.update_stnum_entry.get(), self.update_name_entry.get(), self.update_section_entry.get(), '', self.update_status_option.get()]
         return
 
     def cancel_update(self):
@@ -464,7 +483,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.summary_details.grid()
         self.remove_view_content()
 
-        # Reset other button features
+        # Reenable other button features
         self.add_button.configure(state="normal")
         self.clear_button.configure(state="normal")
         self.sort_button.configure(state="normal")
@@ -496,6 +515,10 @@ class App(customtkinter.CTk, tkinter.Tk):
 databs = sqlite3.connect("Course_Attendance.db")
 cursor = databs.cursor()
 cursor.execute("CREATE TABLE IF NOT EXISTS ATTENDANCE (StudentNum Integer, Name Text, CourseYS Text, Space Text, Status Text)")
+
+tempdata = sqlite3.connect("Updates.db")
+cursor_1 = tempdata.cursor()
+cursor_1.execute("CREATE TABLE IF NOT EXISTS UPDATES (Row Integer, StudentNum Integer, Name Text, CourseYS Text, Space Text, Status Text)")
 
 
 if __name__ == "__main__":
