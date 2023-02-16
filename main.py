@@ -122,7 +122,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.update_button = customtkinter.CTkButton(self.edit_masterlist_frame2, text="Update", width=90, command=self.update_panel)
         self.update_button.grid(row=1, column=2, padx=(5, 5), pady=13, sticky="e")
 
-        self.delete_button = customtkinter.CTkButton(self.edit_masterlist_frame2, text="Delete", fg_color= "dark red", width=90, command=self.delete_student)
+        self.delete_button = customtkinter.CTkButton(self.edit_masterlist_frame2, text="Delete", fg_color= "dark red", width=90, hover_color="#4c0303" , command=self.delete_student)
         self.delete_button.grid(row=1, column=3, padx=(5, 15), pady=13, sticky="e")
 
         # Text Summary of Treeview Data
@@ -334,11 +334,12 @@ class App(customtkinter.CTk, tkinter.Tk):
             messagebox.showerror(title="Error", message="Please complete the form to proceed")
         else:
             student_data = [self.stnum_entry.get(), self.name_entry.get(), self.section_entry.get(), "", self.status_option.get()]
-            cursor.execute("INSERT INTO ATTENDANCE VALUES(?,?,?,?,?)", student_data)
-            databs.commit()
-            messagebox.showinfo(title="AKASHIC", message="Student has been listed")
-            self.clear_entry()
-            self.display_data_treeview()
+            if (messagebox.askyesno(title="AKASHIC", message="Student Numbers will be unchangeable. Do you want to create this profile?")):
+                cursor.execute("INSERT INTO ATTENDANCE VALUES(?,?,?,?,?)", student_data)
+                databs.commit()
+                messagebox.showinfo(title="AKASHIC", message="Student has been listed")
+                self.clear_entry()
+                self.display_data_treeview()
     
     def fetchdb(self):
         cursor.execute("SELECT * FROM ATTENDANCE")
@@ -447,10 +448,12 @@ class App(customtkinter.CTk, tkinter.Tk):
             self.sort_button.configure(state="disabled", fg_color="#14375e")
             self.delete_button.configure(state="disabled")
 
-            self.name_entry.configure(state="disabled")
-            self.stnum_entry.configure(state="disabled")
-            self.section_entry.configure(state="disabled")
-            self.status_option.configure(state="disabled")
+            self.name_entry.configure(state="disabled", fg_color="#2b2c2e")
+            self.stnum_entry.configure(state="disabled", fg_color="#2b2c2e")
+            self.section_entry.configure(state="disabled", fg_color="#2b2c2e")
+            self.status_option.configure(state="disabled", fg_color="#14375e")
+
+            self.update_stnum_entry.configure(state="normal")
 
             if self.update_item != [self.update_stnum_entry.get(), self.update_name_entry.get(), self.update_section_entry.get(), '', self.update_status_option.get()]:
                 self.update_details = self.fetchupdates()
@@ -475,21 +478,19 @@ class App(customtkinter.CTk, tkinter.Tk):
             messagebox.showwarning(title="AKASHIC", message="Tip: Click on an item you want to update on the table above")
     
     def confirm_update(self):
-        self.updated_entries = [self.update_stnum_entry.get(), self.update_name_entry.get(), self.update_section_entry.get(), '', self.update_status_option.get()]
+        self.updated_entries = [self.update_name_entry.get(), self.update_section_entry.get(), '', self.update_status_option.get(), self.update_stnum_entry.get()]
         self.get_temp_data = self.fetchupdates()
-        self.previous_data = []
-        for content in self.get_temp_data[0][1:]:
-            self.previous_data.append(content)
+        self.previous_data = list(self.get_temp_data[0][2:]) + [self.get_temp_data[0][1],]
 
         if self.updated_entries == self.previous_data:
             messagebox.showinfo(title="AKASHIC", message="No changes have been made")
             self.cancel_update()
         else:
             messagebox.showinfo(title="AKASHIC", message="Profile has been updated")
-            # cursor.execute("UPDATE ATTENDANCE SET StudentNum=?, Name=?, CourseYS=?, Space=?, Status=? WHERE ")
-            # databs.commit()
+            cursor.execute("UPDATE ATTENDANCE SET Name=?, CourseYS=?, Space=?, Status=? WHERE StudentNum=?", self.updated_entries)
+            databs.commit()
             self.cancel_update()
-            # self.display_data_treeview()
+            self.display_data_treeview()
         
         cursor_1.execute("DELETE FROM UPDATES WHERE Row=?", [1,])
         tempdata.commit()
@@ -504,12 +505,12 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.add_button.configure(state="normal", fg_color="#1f538d")
         self.clear_button.configure(state="normal", fg_color="#1f538d")
         self.sort_button.configure(state="normal", fg_color="#1f538d")
-        self.delete_button.configure(state="normal", fg_color="#1f538d")
+        self.delete_button.configure(state="normal")
 
-        self.name_entry.configure(state="normal")
-        self.stnum_entry.configure(state="normal")
-        self.section_entry.configure(state="normal")
-        self.status_option.configure(state="normal")
+        self.name_entry.configure(state="normal", fg_color="#343638")
+        self.stnum_entry.configure(state="normal", fg_color="#343638")
+        self.section_entry.configure(state="normal", fg_color="#343638")
+        self.status_option.configure(state="normal", fg_color="#1f538d")
 
     def remove_view_content(self):
         self.update_name_entry.delete(0, END)
