@@ -205,22 +205,24 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.attendance_tool_frame.grid_rowconfigure(0, weight=1)
 
         self.frame_label = customtkinter.CTkLabel(self.attendance_tool_frame, text="Record Details")
-        self.frame_label.place(relx=0.5, rely=0.15, anchor="center")
+        self.frame_label.place(relx=0.5, rely=0.1, anchor="center")
         self.date_label = customtkinter.CTkLabel(self.attendance_tool_frame, text="Date:")
-        self.date_label.place(relx=0.05, rely=0.3, anchor="w")
+        self.date_label.place(relx=0.05, rely=0.22, anchor="w")
         self.section_label = customtkinter.CTkLabel(self.attendance_tool_frame, text="Section:")
-        self.section_label.place(relx=0.05, rely=0.5, anchor="w")
+        self.section_label.place(relx=0.05, rely=0.39, anchor="w")
+        self.prof_label = customtkinter.CTkLabel(self.attendance_tool_frame, text="Instructor:")
+        self.prof_label.place(relx=0.05, rely=0.56, anchor="w")
         self.class_label = customtkinter.CTkLabel(self.attendance_tool_frame, text="Course Description:")
-        self.class_label.place(relx=0.5, rely=0.7, anchor="center")
+        self.class_label.place(relx=0.5, rely=0.73, anchor="center")
 
         self.date_entry = customtkinter.CTkEntry(self.attendance_tool_frame, placeholder_text="Date")
-        self.date_entry.grid(row=1, column=0, padx=(80, 15), pady=(0, 10), sticky="nsew")
-
+        self.date_entry.grid(row=1, column=0, padx=(80, 15), pady=(15, 10), sticky="nsew")
         self.sect_entry = customtkinter.CTkEntry(self.attendance_tool_frame, placeholder_text="Section")
         self.sect_entry.grid(row=2, column=0, padx=(80, 15), pady=(0, 10), sticky="nsew")
-
+        self.instructor_name_entry = customtkinter.CTkEntry(self.attendance_tool_frame, placeholder_text="Prof. Name")
+        self.instructor_name_entry.grid(row=3, column=0, padx=(80, 15), pady=(0, 15), sticky="nsew")
         self.course_entry = customtkinter.CTkOptionMenu(self.attendance_tool_frame, values=["Data Structure and Algorithms"])
-        self.course_entry.grid(row=3, column=0, padx=(20, 15), pady=(15, 20), sticky="nsew")
+        self.course_entry.grid(row=4, column=0, padx=(20, 15), pady=(30, 25), sticky="nsew")
 
         self.notebook = customtkinter.CTkTextbox(self, width=250, activate_scrollbars=True, border_spacing=15)
         self.notebook.grid(row=1, column=3, padx=(5, 15), pady=(12, 0), sticky="nsew")
@@ -361,6 +363,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.scaling_optionemenu.set("100%")
         self.display_data_treeview()
         self.update_panel_frame.grid_remove()
+        self.date_entry.insert(0, date.today())
         self.sect_entry.insert(0, "BSCOE 2-6")
         self.sect_entry.configure(state="disabled", fg_color="#2b2c2e")
 
@@ -375,7 +378,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         # self.slider_2.configure(command=self.progressbar_3.set)
         # self.progressbar_1.configure(mode="indeterminnate")
         # self.progressbar_1.start()
-        # self.textbox.insert("0.0", "CTkTextbox\n\n" + "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
+        self.notebook.insert("0.0", "Attendance Notepad\n\n" + "Late Comers:\n  - \n  - \n  - \n  - \n\nClass Notes:")
         # self.seg_button_1.configure(values=["CTkSegmentedButton", "Value 2", "Value 3"])
         # self.seg_button_1.set("Value 2")
 
