@@ -5,6 +5,7 @@ from tkinter import *
 from tkinter import filedialog as fd
 import customtkinter
 import sqlite3 
+import openpyxl
 from datetime import date
 
 customtkinter.set_appearance_mode("Dark") # Set to Dark mode
@@ -241,7 +242,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.attendance_roll = []
         for stnum, name, section, space, status in self.student_roll:
             self.student_rows += 1
-            student = customtkinter.CTkCheckBox(self.attendance_frame, text=f"  {name}", border_color="red", border_width=1)
+            student = customtkinter.CTkCheckBox(self.attendance_frame, text=f"  {name}", border_color="red", border_width=1, onvalue="present", offvalue="absent")
             student.grid(row=self.student_rows, column=0, padx=(15, 0), pady=(0, 15), sticky="w")
             st_num = customtkinter.CTkLabel(self.attendance_frame, text=f"{stnum}")
             st_num.grid(row=self.student_rows, column=1, padx=(0, 30), pady=(0, 15), sticky="w")
@@ -254,7 +255,7 @@ class App(customtkinter.CTk, tkinter.Tk):
             self.attendance_roll.append(st_section)
             self.attendance_roll.append(empty_desc1)
 
-        self.generate_report_button = customtkinter.CTkButton(self, text="GENERATE REPORT", fg_color="#05af4f", hover_color="#059142", command=self.dummy)
+        self.generate_report_button = customtkinter.CTkButton(self, text="GENERATE REPORT", fg_color="#05af4f", hover_color="#059142", command=self.dummy_1)
         self.generate_report_button.grid(row=3, column=1, padx=(15, 15), pady=(12, 10), columnspan=3, sticky="nsew")
 
         # self.filler_frame = customtkinter.CTkFrame(self, height=50)
@@ -386,6 +387,12 @@ class App(customtkinter.CTk, tkinter.Tk):
         # self.seg_button_1.configure(values=["CTkSegmentedButton", "Value 2", "Value 3"])
         # self.seg_button_1.set("Value 2")
 
+    def get_checkbox_values(self):
+        children_widgets = self.attendance_frame.winfo_children()
+        for child in children_widgets:
+            if "checkbox" in child.winfo_name():
+                print(child.get())
+
     def select_file(self):
         filetypes = (
             ("Excel files", "*.xlsx"), 
@@ -400,6 +407,12 @@ class App(customtkinter.CTk, tkinter.Tk):
         
         return filename
 
+    def paste_data_to_excel(self):
+        selected_file = self.select_file()
+        workbook_obj = openpyxl.load_workbook(selected_file)
+        sheet_obj = workbook_obj.active
+
+        return
 
     def dummy(self):
         student_list = self.fetchdb()
