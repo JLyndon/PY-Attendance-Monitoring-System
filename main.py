@@ -255,7 +255,7 @@ class App(customtkinter.CTk, tkinter.Tk):
             self.attendance_roll.append(st_section)
             self.attendance_roll.append(empty_desc1)
 
-        self.generate_report_button = customtkinter.CTkButton(self, text="GENERATE REPORT", fg_color="#05af4f", hover_color="#059142", command=self.dummy_1)
+        self.generate_report_button = customtkinter.CTkButton(self, text="GENERATE REPORT", fg_color="#05af4f", hover_color="#059142", command=self.get_checkbox_values)
         self.generate_report_button.grid(row=3, column=1, padx=(15, 15), pady=(12, 10), columnspan=3, sticky="nsew")
 
         # self.filler_frame = customtkinter.CTkFrame(self, height=50)
@@ -387,11 +387,17 @@ class App(customtkinter.CTk, tkinter.Tk):
         # self.seg_button_1.configure(values=["CTkSegmentedButton", "Value 2", "Value 3"])
         # self.seg_button_1.set("Value 2")
 
+
+
     def get_checkbox_values(self):
         children_widgets = self.attendance_frame.winfo_children()
+        checkbox_values = []
+        checkbox_names = []
         for child in children_widgets:
             if "checkbox" in child.winfo_name():
-                print(child.get())
+                checkbox_names.append(child.cget("text"))
+                checkbox_values.append(child.get())
+        return checkbox_names, checkbox_values
 
     def select_file(self):
         filetypes = (
