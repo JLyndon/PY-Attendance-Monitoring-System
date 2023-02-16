@@ -187,7 +187,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.update_status_option.grid(row=3, column=0, padx=(95, 10), pady=(5, 15), columnspan=2, sticky="nsew")
 
         # Buttons for Confirmation of edit
-        self.confirm_update_yes = customtkinter.CTkButton(self.update_panel_frame, text="Confirm", width=100)
+        self.confirm_update_yes = customtkinter.CTkButton(self.update_panel_frame, text="Confirm", width=100, command=self.confirm_update)
         self.confirm_update_yes.grid(row=4, column=0, padx=(20, 10), pady=(0, 10), sticky="nsew")
 
         self.confirm_update_no = customtkinter.CTkButton(self.update_panel_frame, text="Cancel", command=self.cancel_update)
@@ -442,9 +442,9 @@ class App(customtkinter.CTk, tkinter.Tk):
             self.update_panel_frame.grid()
 
             # Disable all buttons except update
-            self.add_button.configure(state="disabled")
-            self.clear_button.configure(state="disabled")
-            self.sort_button.configure(state="disabled")
+            self.add_button.configure(state="disabled", fg_color="#14375e")
+            self.clear_button.configure(state="disabled", fg_color="#14375e")
+            self.sort_button.configure(state="disabled", fg_color="#14375e")
             self.delete_button.configure(state="disabled")
 
             self.name_entry.configure(state="disabled")
@@ -454,7 +454,7 @@ class App(customtkinter.CTk, tkinter.Tk):
 
             if self.update_item != [self.update_stnum_entry.get(), self.update_name_entry.get(), self.update_section_entry.get(), '', self.update_status_option.get()]:
                 self.update_details = self.fetchupdates()
-                print(self.update_details)
+
                 # If focus is changed, remove temporary data from database
                 if (self.update_details != []) or (self.update_details != None):
                     cursor_1.execute("DELETE FROM UPDATES WHERE Row=?", [1,])
@@ -464,19 +464,36 @@ class App(customtkinter.CTk, tkinter.Tk):
                 self.update_stnum_entry.insert(0, self.update_item[0])
                 self.update_section_entry.insert(0, self.update_item[2])
                 self.update_status_option.set(self.update_item[4])
+
+                self.update_stnum_entry.configure(state="disabled", fg_color="#181818")
                 
                 # Store temporary data every attempt of update
                 cursor_1.execute("INSERT INTO UPDATES VALUES(?,?,?,?,?,?)", [1, self.update_stnum_entry.get(), self.update_name_entry.get(), self.update_section_entry.get(), '', self.update_status_option.get()])
                 tempdata.commit()
 
-                self.update_details_1 = self.fetchupdates()
-                print(self.update_details_1)
         else:
             messagebox.showwarning(title="AKASHIC", message="Tip: Click on an item you want to update on the table above")
     
     def confirm_update(self):
         self.updated_entries = [self.update_stnum_entry.get(), self.update_name_entry.get(), self.update_section_entry.get(), '', self.update_status_option.get()]
-        return
+        self.get_temp_data = self.fetchupdates()
+        self.previous_data = []
+        for content in self.get_temp_data[0][1:]:
+            self.previous_data.append(content)
+
+        if self.updated_entries == self.previous_data:
+            messagebox.showinfo(title="AKASHIC", message="No changes have been made")
+            self.cancel_update()
+        else:
+            messagebox.showinfo(title="AKASHIC", message="Profile has been updated")
+            # cursor.execute("UPDATE ATTENDANCE SET StudentNum=?, Name=?, CourseYS=?, Space=?, Status=? WHERE ")
+            # databs.commit()
+            self.cancel_update()
+            # self.display_data_treeview()
+        
+        cursor_1.execute("DELETE FROM UPDATES WHERE Row=?", [1,])
+        tempdata.commit()
+
 
     def cancel_update(self):
         self.update_panel_frame.grid_remove()
@@ -484,10 +501,10 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.remove_view_content()
 
         # Reenable other button features
-        self.add_button.configure(state="normal")
-        self.clear_button.configure(state="normal")
-        self.sort_button.configure(state="normal")
-        self.delete_button.configure(state="normal")
+        self.add_button.configure(state="normal", fg_color="#1f538d")
+        self.clear_button.configure(state="normal", fg_color="#1f538d")
+        self.sort_button.configure(state="normal", fg_color="#1f538d")
+        self.delete_button.configure(state="normal", fg_color="#1f538d")
 
         self.name_entry.configure(state="normal")
         self.stnum_entry.configure(state="normal")
