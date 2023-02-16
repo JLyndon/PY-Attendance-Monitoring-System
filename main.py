@@ -201,14 +201,26 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         self.attendance_tool_frame = customtkinter.CTkFrame(self, height=50)
         self.attendance_tool_frame.grid(row=0, column=3, padx=(5, 15), pady=(12, 0), columnspan=2, rowspan=1, sticky="nsew")
-        self.attendance_tool_frame.grid_columnconfigure(0, weight=1)
+        self.attendance_tool_frame.grid_columnconfigure(0, weight=0)
         self.attendance_tool_frame.grid_rowconfigure(0, weight=1)
 
-        self.date_entry = customtkinter.CTkEntry(self.attendance_tool_frame, placeholder_text="Date")
-        self.date_entry.grid(row=1, column=0, padx=(20, 20), pady=(40, 5), sticky="nsew")
+        self.frame_label = customtkinter.CTkLabel(self.attendance_tool_frame, text="Record Details")
+        self.frame_label.place(relx=0.5, rely=0.15, anchor="center")
+        self.date_label = customtkinter.CTkLabel(self.attendance_tool_frame, text="Date:")
+        self.date_label.place(relx=0.05, rely=0.3, anchor="w")
+        self.section_label = customtkinter.CTkLabel(self.attendance_tool_frame, text="Section:")
+        self.section_label.place(relx=0.05, rely=0.5, anchor="w")
+        self.class_label = customtkinter.CTkLabel(self.attendance_tool_frame, text="Course Description:")
+        self.class_label.place(relx=0.5, rely=0.7, anchor="center")
 
         self.date_entry = customtkinter.CTkEntry(self.attendance_tool_frame, placeholder_text="Date")
-        self.date_entry.grid(row=0, column=0, padx=(20, 20), pady=(40, 5), sticky="nsew")
+        self.date_entry.grid(row=1, column=0, padx=(80, 15), pady=(0, 10), sticky="nsew")
+
+        self.sect_entry = customtkinter.CTkEntry(self.attendance_tool_frame, placeholder_text="Section")
+        self.sect_entry.grid(row=2, column=0, padx=(80, 15), pady=(0, 10), sticky="nsew")
+
+        self.course_entry = customtkinter.CTkOptionMenu(self.attendance_tool_frame, values=["Data Structure and Algorithms"])
+        self.course_entry.grid(row=3, column=0, padx=(20, 15), pady=(15, 20), sticky="nsew")
 
         self.notebook = customtkinter.CTkTextbox(self, width=250, activate_scrollbars=True, border_spacing=15)
         self.notebook.grid(row=1, column=3, padx=(5, 15), pady=(12, 0), sticky="nsew")
@@ -223,18 +235,26 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.attendance_roll = []
         for stnum, name, section, space, status in self.student_roll:
             self.student_rows += 1
-            student = customtkinter.CTkCheckBox(self.attendance_frame, text=f"{name}", border_color="red", border_width=1,)
+            student = customtkinter.CTkCheckBox(self.attendance_frame, text=f"  {name}", border_color="red", border_width=1)
             student.grid(row=self.student_rows, column=0, padx=(15, 0), pady=(0, 15), sticky="w")
             st_num = customtkinter.CTkLabel(self.attendance_frame, text=f"{stnum}")
-            st_num.grid(row=self.student_rows, column=1, padx=(15, 0), pady=(0, 15), sticky="w")
+            st_num.grid(row=self.student_rows, column=1, padx=(0, 30), pady=(0, 15), sticky="w")
             st_section = customtkinter.CTkLabel(self.attendance_frame, text=f"{section}")
-            st_section.grid(row=self.student_rows, column=2, padx=(15, 0), pady=(0, 15), sticky="w")
+            st_section.grid(row=self.student_rows, column=2, padx=(5, 50), pady=(0, 15), sticky="w")
+            empty_desc1 = customtkinter.CTkLabel(self.attendance_frame, text=f"--")
+            empty_desc1.grid(row=self.student_rows, column=3, padx=(15, 50), pady=(0, 15), sticky="nsew")
             self.attendance_roll.append(student)
             self.attendance_roll.append(st_num)
+            self.attendance_roll.append(st_section)
+            self.attendance_roll.append(empty_desc1)
 
         self.generate_report_button = customtkinter.CTkButton(self, text="GENERATE REPORT", fg_color="#05af4f", hover_color="#059142", command=self.dummy)
         self.generate_report_button.grid(row=3, column=1, padx=(15, 15), pady=(12, 10), columnspan=3, sticky="nsew")
 
+        # self.filler_frame = customtkinter.CTkFrame(self, height=50)
+        # self.filler_frame.grid(row=4, column=1, padx=(15, 15), pady=(0, 20), columnspan=3, rowspan=1, sticky="nsew")
+        # self.filler_frame.grid_columnconfigure(0, weight=0)
+        # self.filler_frame.grid_rowconfigure(0, weight=0)
 
         # self.sidebar_button_1.configure(state="disabled")
 
@@ -341,6 +361,8 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.scaling_optionemenu.set("100%")
         self.display_data_treeview()
         self.update_panel_frame.grid_remove()
+        self.sect_entry.insert(0, "BSCOE 2-6")
+        self.sect_entry.configure(state="disabled", fg_color="#2b2c2e")
 
         self.terminal_tree.grid_remove()
         self.masterlist_frame.grid_remove()
