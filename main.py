@@ -228,7 +228,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.notebook = customtkinter.CTkTextbox(self, width=250, activate_scrollbars=True, border_spacing=15)
         self.notebook.grid(row=2, column=3, padx=(5, 15), pady=(0, 0), sticky="nsew")
 
-        self.link_file = customtkinter.CTkButton(self, text="Open Excel file")        
+        self.link_file = customtkinter.CTkButton(self, text="Open Excel file", command=self.select_file)        
         self.link_file.grid(row=1, column=3, padx=(7, 15), pady=(7, 7), sticky="ew")
 
         self.attendance_frame = customtkinter.CTkScrollableFrame(self, label_text="Attendance Checklist")
@@ -385,6 +385,21 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.notebook.insert("0.0", "Attendance Notepad\n\n" + "Late Comers:\n  - \n  - \n  - \n  - \n\nClass Notes:")
         # self.seg_button_1.configure(values=["CTkSegmentedButton", "Value 2", "Value 3"])
         # self.seg_button_1.set("Value 2")
+
+    def select_file(self):
+        filetypes = (
+            ("Excel files", "*.xlsx"), 
+            ("Excel files", "*.xls"), 
+            ("all files", "*.*")
+        )
+
+        filename = fd.askopenfilename(
+            title='Open a file',
+            initialdir='/',
+            filetypes= filetypes)
+        
+        return filename
+
 
     def dummy(self):
         student_list = self.fetchdb()
