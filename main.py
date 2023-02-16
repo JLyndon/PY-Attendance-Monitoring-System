@@ -4,6 +4,7 @@ from tkinter import ttk
 from tkinter import *
 import customtkinter
 import sqlite3 
+from datetime import date
 
 customtkinter.set_appearance_mode("Dark") # Set to Dark mode
 customtkinter.set_default_color_theme("dark-blue")  # Set 'dark-blue' theme
@@ -84,7 +85,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.edit_masterlist_frame1.grid(row=2, column=1, padx=(15, 5), pady=(12, 0), sticky="nsew")
         self.edit_masterlist_frame1.grid_columnconfigure(1, weight=1)
 
-        self.add_button = customtkinter.CTkButton(self.edit_masterlist_frame1, text="Add", command=self.add_student)
+        self.add_button = customtkinter.CTkButton(self.edit_masterlist_frame1, text="Add", fg_color="#05af4f", hover_color="#059142", command=self.add_student)
         self.add_button.grid(row=1, column=1, padx=(20, 20), pady=13, sticky="w")
 
         self.clear_button = customtkinter.CTkButton(self.edit_masterlist_frame1, text="Clear", command=self.clear_entry)
@@ -199,18 +200,39 @@ class App(customtkinter.CTk, tkinter.Tk):
         # ------------------------------- SECOND PANEL -----------------------------------------
 
         self.attendance_tool_frame = customtkinter.CTkFrame(self, height=50)
-        self.attendance_tool_frame.grid(row=0, column=1, padx=(15, 5), pady=(12, 0), columnspan=2, rowspan=1, sticky="nsew")
+        self.attendance_tool_frame.grid(row=0, column=3, padx=(5, 15), pady=(12, 0), columnspan=2, rowspan=1, sticky="nsew")
         self.attendance_tool_frame.grid_columnconfigure(0, weight=1)
         self.attendance_tool_frame.grid_rowconfigure(0, weight=1)
 
+        self.date_entry = customtkinter.CTkEntry(self.attendance_tool_frame, placeholder_text="Date")
+        self.date_entry.grid(row=1, column=0, padx=(20, 20), pady=(40, 5), sticky="nsew")
+
+        self.date_entry = customtkinter.CTkEntry(self.attendance_tool_frame, placeholder_text="Date")
+        self.date_entry.grid(row=0, column=0, padx=(20, 20), pady=(40, 5), sticky="nsew")
+
         self.notebook = customtkinter.CTkTextbox(self, width=250, activate_scrollbars=True, border_spacing=15)
-        self.notebook.grid(row=0, column=3, padx=(5, 15), pady=(12, 0), sticky="nsew")
+        self.notebook.grid(row=1, column=3, padx=(5, 15), pady=(12, 0), sticky="nsew")
 
         self.attendance_frame = customtkinter.CTkScrollableFrame(self, label_text="Attendance Checklist")
-        self.attendance_frame.grid(row=1, column=1, padx=(15, 15), pady=(12, 0), columnspan=3, rowspan=2, sticky="nsew")
+        self.attendance_frame.grid(row=0, column=1, padx=(15, 5), pady=(12, 0), columnspan=2, rowspan=3, sticky="nsew")
         self.attendance_frame.grid_columnconfigure(0, weight=1)
 
-        self.generate_report_button = customtkinter.CTkButton(self, text="GENERATE REPORT")
+        self.student_roll =  self.fetchdb()
+        self.student_rows = -1
+
+        self.attendance_roll = []
+        for stnum, name, section, space, status in self.student_roll:
+            self.student_rows += 1
+            student = customtkinter.CTkCheckBox(self.attendance_frame, text=f"{name}", border_color="red", border_width=1,)
+            student.grid(row=self.student_rows, column=0, padx=(15, 0), pady=(0, 15), sticky="w")
+            st_num = customtkinter.CTkLabel(self.attendance_frame, text=f"{stnum}")
+            st_num.grid(row=self.student_rows, column=1, padx=(15, 0), pady=(0, 15), sticky="w")
+            st_section = customtkinter.CTkLabel(self.attendance_frame, text=f"{section}")
+            st_section.grid(row=self.student_rows, column=2, padx=(15, 0), pady=(0, 15), sticky="w")
+            self.attendance_roll.append(student)
+            self.attendance_roll.append(st_num)
+
+        self.generate_report_button = customtkinter.CTkButton(self, text="GENERATE REPORT", fg_color="#05af4f", hover_color="#059142", command=self.dummy)
         self.generate_report_button.grid(row=3, column=1, padx=(15, 15), pady=(12, 10), columnspan=3, sticky="nsew")
 
 
@@ -335,7 +357,19 @@ class App(customtkinter.CTk, tkinter.Tk):
         # self.seg_button_1.configure(values=["CTkSegmentedButton", "Value 2", "Value 3"])
         # self.seg_button_1.set("Value 2")
 
-
+    def dummy(self):
+        student_list = self.fetchdb()
+        for thing in student_list:
+            return
+        self.key_unordered_data = []
+        for data in self.unordered_dataset:
+            for specific in data:
+                if specific == data[1]:
+                    self.key_unordered_data.append(specific)
+        # for i in range(100):
+        #     switch = customtkinter.CTkSwitch(master=self.scrollable_frame, text=f"CTkSwitch {i}")
+        #     switch.grid(row=i, column=0, padx=10, pady=(0, 20))
+        #     self.scrollable_frame_switches.append(switch)
     # def masterlist(self):
     #     self.terminal_tree.grid()
     #     self.masterlist_frame.grid()
@@ -383,12 +417,12 @@ class App(customtkinter.CTk, tkinter.Tk):
         for item in self.fetchdb():
             self.terminal_tree.insert("", END, values=item)
         
-        self.summary_list = self.fetchdb()
+        summary_list = self.fetchdb()
         self.total_students = 0
         self.total_regular = 0
         self.total_irregular = 0
         self.total_transferee = 0
-        for data in self.summary_list:
+        for data in summary_list:
             if 'Regular' in data:
                 self.total_students += 1
                 self.total_regular += 1
@@ -420,7 +454,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.delete_item = self.get_focused_data()
         if (self.delete_item != ""):
             self.convert_list = self.convert_int_to_str(self.delete_item)
-            if (messagebox.askyesno(title="AKASHIC", message=f"Student {self.convert_list[1]} will be deleted. Do want to proceed?")) == True:
+            if (messagebox.askyesno(title="AKASHIC", message=f"Student '{self.convert_list[1]}' will be deleted. Do want to proceed?")) == True:
                 cursor.execute("DELETE FROM ATTENDANCE WHERE StudentNum=?", [self.convert_list[0],])
                 databs.commit()
                 self.display_data_treeview()
@@ -470,7 +504,7 @@ class App(customtkinter.CTk, tkinter.Tk):
             self.update_panel_frame.grid()
 
             # Disable all buttons except update
-            self.add_button.configure(state="disabled", fg_color="#14375e")
+            self.add_button.configure(state="disabled", fg_color="#059142")
             self.clear_button.configure(state="disabled", fg_color="#14375e")
             self.sort_button.configure(state="disabled", fg_color="#14375e")
             self.delete_button.configure(state="disabled")
@@ -529,7 +563,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.remove_view_content()
 
         # Reenable other button features
-        self.add_button.configure(state="normal", fg_color="#1f538d")
+        self.add_button.configure(state="normal", fg_color="#059142")
         self.clear_button.configure(state="normal", fg_color="#1f538d")
         self.sort_button.configure(state="normal", fg_color="#1f538d")
         self.delete_button.configure(state="normal")
