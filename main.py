@@ -28,9 +28,9 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.sidebar_frame.grid_rowconfigure(4, weight=1)
         self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="AKASHIC", font=customtkinter.CTkFont(family="Impact", size=40, weight="normal"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
-        self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Records", command=self.masterlist)
+        self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Records")
         self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
-        self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="Schedule", command=self.records)
+        self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="Schedule")
         self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
         self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Import", command=self.get_focused_data)
         self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=40)
@@ -298,6 +298,12 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.scaling_optionemenu.set("100%")
         self.display_data_treeview()
         self.update_panel_frame.grid_remove()
+
+        self.terminal_tree.grid_remove()
+        self.masterlist_frame.grid_remove()
+        self.edit_masterlist_frame1.grid_remove()
+        self.edit_masterlist_frame2.grid_remove()
+        self.masterlLabel_frame.grid_remove()
         # self.optionmenu_1.set("CTkOptionmenu")
         # self.combobox_1.set("CTkComboBox")
         # self.slider_1.configure(command=self.progressbar_2.set)
@@ -309,19 +315,19 @@ class App(customtkinter.CTk, tkinter.Tk):
         # self.seg_button_1.set("Value 2")
 
 
-    def masterlist(self):
-        self.terminal_tree.grid()
-        self.masterlist_frame.grid()
-        self.edit_masterlist_frame1.grid()
-        self.edit_masterlist_frame2.grid()
-        self.masterlLabel_frame.grid()
+    # def masterlist(self):
+    #     self.terminal_tree.grid()
+    #     self.masterlist_frame.grid()
+    #     self.edit_masterlist_frame1.grid()
+    #     self.edit_masterlist_frame2.grid()
+    #     self.masterlLabel_frame.grid()
 
-    def records(self):
-        self.terminal_tree.grid_remove()
-        self.masterlist_frame.grid_remove()
-        self.edit_masterlist_frame1.grid_remove()
-        self.edit_masterlist_frame2.grid_remove()
-        self.masterlLabel_frame.grid_remove()
+    # def records(self):
+    #     self.terminal_tree.grid_remove()
+    #     self.masterlist_frame.grid_remove()
+    #     self.edit_masterlist_frame1.grid_remove()
+    #     self.edit_masterlist_frame2.grid_remove()
+    #     self.masterlLabel_frame.grid_remove()
     
     def clear_entry(self):
         self.name_entry.delete(0, END)
