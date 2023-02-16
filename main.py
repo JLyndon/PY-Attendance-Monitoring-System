@@ -44,6 +44,8 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.scaling_optionemenu.grid(row=8, column=0, padx=20, pady=(10, 20))
 
 
+        # ------------------------------- FIRST PANEL -----------------------------------------
+
         # Frames for Label and Layout purposes
         self.masterlist_frame = customtkinter.CTkFrame(self)
         self.masterlist_frame.grid(row=0, column=1, padx=(15, 15), pady=(12, 0), columnspan=2, sticky="nsew")
@@ -192,6 +194,25 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         self.confirm_update_no = customtkinter.CTkButton(self.update_panel_frame, text="Cancel", command=self.cancel_update)
         self.confirm_update_no.grid(row=4, column=1, padx=(10, 20), pady=(0, 10), sticky="nsew")
+
+
+        # ------------------------------- SECOND PANEL -----------------------------------------
+
+        self.attendance_tool_frame = customtkinter.CTkFrame(self, height=50)
+        self.attendance_tool_frame.grid(row=0, column=1, padx=(15, 5), pady=(12, 0), columnspan=2, rowspan=1, sticky="nsew")
+        self.attendance_tool_frame.grid_columnconfigure(0, weight=1)
+        self.attendance_tool_frame.grid_rowconfigure(0, weight=1)
+
+        self.notebook = customtkinter.CTkTextbox(self, width=250, activate_scrollbars=True, border_spacing=15)
+        self.notebook.grid(row=0, column=3, padx=(5, 15), pady=(12, 0), sticky="nsew")
+
+        self.attendance_frame = customtkinter.CTkScrollableFrame(self, label_text="Attendance Checklist")
+        self.attendance_frame.grid(row=1, column=1, padx=(15, 15), pady=(12, 0), columnspan=3, rowspan=2, sticky="nsew")
+        self.attendance_frame.grid_columnconfigure(0, weight=1)
+
+        self.generate_report_button = customtkinter.CTkButton(self, text="GENERATE REPORT")
+        self.generate_report_button.grid(row=3, column=1, padx=(15, 15), pady=(12, 10), columnspan=3, sticky="nsew")
+
 
         # self.sidebar_button_1.configure(state="disabled")
 
