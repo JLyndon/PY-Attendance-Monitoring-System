@@ -2,6 +2,7 @@ import tkinter
 from tkinter import messagebox
 from tkinter import ttk
 from tkinter import *
+from tkinter import filedialog as fd
 import customtkinter
 import sqlite3 
 from datetime import date
@@ -205,7 +206,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.attendance_tool_frame.grid_rowconfigure(0, weight=1)
 
         self.frame_label = customtkinter.CTkLabel(self.attendance_tool_frame, text="Record Details")
-        self.frame_label.place(relx=0.5, rely=0.1, anchor="center")
+        self.frame_label.place(relx=0.5, rely=0.08, anchor="center")
         self.date_label = customtkinter.CTkLabel(self.attendance_tool_frame, text="Date:")
         self.date_label.place(relx=0.05, rely=0.22, anchor="w")
         self.section_label = customtkinter.CTkLabel(self.attendance_tool_frame, text="Section:")
@@ -222,10 +223,13 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.instructor_name_entry = customtkinter.CTkEntry(self.attendance_tool_frame, placeholder_text="Prof. Name")
         self.instructor_name_entry.grid(row=3, column=0, padx=(80, 15), pady=(0, 15), sticky="nsew")
         self.course_entry = customtkinter.CTkOptionMenu(self.attendance_tool_frame, values=["Data Structure and Algorithms"])
-        self.course_entry.grid(row=4, column=0, padx=(20, 15), pady=(30, 25), sticky="nsew")
+        self.course_entry.grid(row=4, column=0, padx=(20, 15), pady=(30, 20), sticky="nsew")
 
         self.notebook = customtkinter.CTkTextbox(self, width=250, activate_scrollbars=True, border_spacing=15)
-        self.notebook.grid(row=1, column=3, padx=(5, 15), pady=(12, 0), sticky="nsew")
+        self.notebook.grid(row=2, column=3, padx=(5, 15), pady=(0, 0), sticky="nsew")
+
+        self.link_file = customtkinter.CTkButton(self, text="Open Excel file")        
+        self.link_file.grid(row=1, column=3, padx=(7, 15), pady=(7, 7), sticky="ew")
 
         self.attendance_frame = customtkinter.CTkScrollableFrame(self, label_text="Attendance Checklist")
         self.attendance_frame.grid(row=0, column=1, padx=(15, 5), pady=(12, 0), columnspan=2, rowspan=3, sticky="nsew")
