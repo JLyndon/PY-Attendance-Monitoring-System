@@ -60,7 +60,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.masterlLabel_frame.grid(row=1, column=1, padx=(15, 15), pady=(10, 0), columnspan=2, sticky="nsew")
         self.masterlLabel_frame.grid_columnconfigure(0, weight=1)
 
-        self.ml_label = customtkinter.CTkLabel(self.masterlist_frame, text="MASTERLIST\nCOURSE YEAR SECTION - CMPE101")
+        self.ml_label = customtkinter.CTkLabel(self.masterlist_frame, text=f"MASTERLIST\n{self.sidebar_button_3.get().upper()}  -  DSA")
         self.ml_label.grid(row=0, column=0, padx=(15, 15), pady=(8, 0), sticky="n")
 
 
@@ -250,6 +250,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.date_entry.insert(0, date.today())
         self.sect_entry.insert(0, "BSCOE 2-6")
         self.sect_entry.configure(state="disabled", fg_color="#2b2c2e")
+        self.sidebar_button_1.configure(fg_color="#14375e")
 
         if (self.fetchfilerecord()[0][0] != ""):
             if (".xlsx" in self.fetchfilerecord()[0][0]) or (".xls" in self.fetchfilerecord()[0][0]):
