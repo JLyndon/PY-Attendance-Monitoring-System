@@ -7,6 +7,7 @@ import customtkinter
 import sqlite3 
 import openpyxl
 from openpyxl.styles.alignment import Alignment
+from pathlib import Path
 from datetime import date
 
 customtkinter.set_appearance_mode("Dark") # Set to Dark mode
@@ -32,11 +33,11 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.sidebar_frame.grid_rowconfigure(4, weight=1)
         self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="AKASHIC", font=customtkinter.CTkFont(family="Impact", size=40, weight="normal"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
-        self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Records")
+        self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Masterlist", command=self.masterlist)
         self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
-        self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="Schedule")
+        self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="Record", command=self.records)
         self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
-        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Import", command=self.get_focused_data)
+        self.sidebar_button_3 = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["BSCOE 2-6"])
         self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=40)
         self.appearance_mode_label = customtkinter.CTkLabel(self.sidebar_frame, text="Appearance Mode:", anchor="w")
         self.appearance_mode_label.grid(row=5, column=0, padx=20, pady=(10, 0))
@@ -88,7 +89,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.edit_masterlist_frame1.grid(row=2, column=1, padx=(15, 5), pady=(12, 0), sticky="nsew")
         self.edit_masterlist_frame1.grid_columnconfigure(1, weight=1)
 
-        self.add_button = customtkinter.CTkButton(self.edit_masterlist_frame1, text="Add", fg_color="#05af4f", hover_color="#059142", command=self.add_student)
+        self.add_button = customtkinter.CTkButton(self.edit_masterlist_frame1, text="Add", fg_color="#059142" ,hover_color="#03692f", command=self.add_student)
         self.add_button.grid(row=1, column=1, padx=(20, 20), pady=13, sticky="w")
 
         self.clear_button = customtkinter.CTkButton(self.edit_masterlist_frame1, text="Clear", command=self.clear_entry)
@@ -237,134 +238,11 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.attendance_frame.grid(row=0, column=1, padx=(15, 5), pady=(12, 0), columnspan=2, rowspan=3, sticky="nsew")
         self.attendance_frame.grid_columnconfigure(0, weight=1)
 
-        self.student_roll =  self.fetchdb()
-        self.student_rows = -1
-
-        self.attendance_roll = []
-        for stnum, name, section, space, status in self.student_roll:
-            self.student_rows += 1
-            student = customtkinter.CTkCheckBox(self.attendance_frame, text=f"  {name}", border_color="red", border_width=1, onvalue="present", offvalue="absent")
-            student.grid(row=self.student_rows, column=0, padx=(15, 0), pady=(0, 15), sticky="w")
-            st_num = customtkinter.CTkLabel(self.attendance_frame, text=f"{stnum}")
-            st_num.grid(row=self.student_rows, column=1, padx=(0, 30), pady=(0, 15), sticky="w")
-            st_section = customtkinter.CTkLabel(self.attendance_frame, text=f"{section}")
-            st_section.grid(row=self.student_rows, column=2, padx=(5, 50), pady=(0, 15), sticky="w")
-            empty_desc1 = customtkinter.CTkLabel(self.attendance_frame, text=f"--")
-            empty_desc1.grid(row=self.student_rows, column=3, padx=(15, 50), pady=(0, 15), sticky="nsew")
-            self.attendance_roll.append(student)
-            self.attendance_roll.append(st_num)
-            self.attendance_roll.append(st_section)
-            self.attendance_roll.append(empty_desc1)
-
         self.generate_report_button = customtkinter.CTkButton(self, text="GENERATE REPORT", fg_color="#059142", hover_color="#03692f", command=self.write_in_excel)
         self.generate_report_button.grid(row=3, column=1, padx=(15, 15), pady=(12, 10), columnspan=3, sticky="nsew")
 
-        # self.filler_frame = customtkinter.CTkFrame(self, height=50)
-        # self.filler_frame.grid(row=4, column=1, padx=(15, 15), pady=(0, 20), columnspan=3, rowspan=1, sticky="nsew")
-        # self.filler_frame.grid_columnconfigure(0, weight=0)
-        # self.filler_frame.grid_rowconfigure(0, weight=0)
-
-        # self.sidebar_button_1.configure(state="disabled")
-
-        # self.tree = ttk.Treeview(self.masterlist_frame, columns=(1, 2, 3, 4), show="headings")
-        # self.tree.heading("1", text="No.")
-        # self.tree.column("1", width=75)
-        # self.tree.heading("2", text="Name")
-        # self.tree.column("2", width=75)
-        # self.tree.heading("3", text="Section")
-        # self.tree.column("3", width=75)
-        # self.tree.heading("4", text="Status")
-        # self.tree.column("4", width=75)
-
-        # # create main entry and button
-        # self.entry = customtkinter.CTkEntry(self, placeholder_text="CTkEntry")
-        # self.entry.grid(row=3, column=1, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
-
-        # self.main_button_1 = customtkinter.CTkButton(master=self, fg_color="transparent", border_width=2, text_color=("gray10", "#DCE4EE"))
-        # self.main_button_1.grid(row=3, column=3, padx=(20, 20), pady=(20, 20), sticky="nsew")
-
-        # # create textbox
-        # self.textbox = customtkinter.CTkTextbox(self, width=250)
-        # self.textbox.grid(row=0, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
-
-        # # create tabview
-        # self.tabview = customtkinter.CTkTabview(self, width=250)
-        # self.tabview.grid(row=0, column=2, padx=(20, 0), pady=(20, 0), sticky="nsew")
-        # self.tabview.add("CTkTabview")
-        # self.tabview.add("Tab 2")
-        # self.tabview.add("Tab 3")
-        # self.tabview.tab("CTkTabview").grid_columnconfigure(0, weight=1)  # configure grid of individual tabs
-        # self.tabview.tab("Tab 2").grid_columnconfigure(0, weight=1)
-
-        # self.optionmenu_1 = customtkinter.CTkOptionMenu(self.tabview.tab("CTkTabview"), dynamic_resizing=False,
-        #                                                 values=["Value 1", "Value 2", "Value Long Long Long"])
-        # self.optionmenu_1.grid(row=0, column=0, padx=20, pady=(20, 10))
-        # self.combobox_1 = customtkinter.CTkComboBox(self.tabview.tab("CTkTabview"),
-        #                                             values=["Value 1", "Value 2", "Value Long....."])
-        # self.combobox_1.grid(row=1, column=0, padx=20, pady=(10, 10))
-        # self.string_input_button = customtkinter.CTkButton(self.tabview.tab("CTkTabview"), text="Open CTkInputDialog",
-        #                                                    command=self.open_input_dialog_event)
-        # self.string_input_button.grid(row=2, column=0, padx=20, pady=(10, 10))
-        # self.label_tab_2 = customtkinter.CTkLabel(self.tabview.tab("Tab 2"), text="CTkLabel on Tab 2")
-        # self.label_tab_2.grid(row=0, column=0, padx=20, pady=20)
-
-        # # create radiobutton frame
-        # self.radiobutton_frame = customtkinter.CTkFrame(self)
-        # self.radiobutton_frame.grid(row=0, column=3, padx=(20, 20), pady=(20, 0), sticky="nsew")
-        # self.radio_var = tkinter.IntVar(value=0)
-        # self.label_radio_group = customtkinter.CTkLabel(master=self.radiobutton_frame, text="CTkRadioButton Group:")
-        # self.label_radio_group.grid(row=0, column=2, columnspan=1, padx=10, pady=10, sticky="")
-        # self.radio_button_1 = customtkinter.CTkRadioButton(master=self.radiobutton_frame, variable=self.radio_var, value=0)
-        # self.radio_button_1.grid(row=1, column=2, pady=10, padx=20, sticky="n")
-        # self.radio_button_2 = customtkinter.CTkRadioButton(master=self.radiobutton_frame, variable=self.radio_var, value=1)
-        # self.radio_button_2.grid(row=2, column=2, pady=10, padx=20, sticky="n")
-        # self.radio_button_3 = customtkinter.CTkRadioButton(master=self.radiobutton_frame, variable=self.radio_var, value=2)
-        # self.radio_button_3.grid(row=3, column=2, pady=10, padx=20, sticky="n")
-
-        # # create slider and progressbar frame
-        # self.slider_progressbar_frame = customtkinter.CTkFrame(self, fg_color="transparent")
-        # self.slider_progressbar_frame.grid(row=1, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
-        # self.slider_progressbar_frame.grid_columnconfigure(0, weight=1)
-        # self.slider_progressbar_frame.grid_rowconfigure(4, weight=1)
-        # self.seg_button_1 = customtkinter.CTkSegmentedButton(self.slider_progressbar_frame)
-        # self.seg_button_1.grid(row=0, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
-        # self.progressbar_1 = customtkinter.CTkProgressBar(self.slider_progressbar_frame)
-        # self.progressbar_1.grid(row=1, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
-        # self.progressbar_2 = customtkinter.CTkProgressBar(self.slider_progressbar_frame)
-        # self.progressbar_2.grid(row=2, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
-        # self.slider_1 = customtkinter.CTkSlider(self.slider_progressbar_frame, from_=0, to=1, number_of_steps=4)
-        # self.slider_1.grid(row=3, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
-        # self.slider_2 = customtkinter.CTkSlider(self.slider_progressbar_frame, orientation="vertical")
-        # self.slider_2.grid(row=0, column=1, rowspan=5, padx=(10, 10), pady=(10, 10), sticky="ns")
-        # self.progressbar_3 = customtkinter.CTkProgressBar(self.slider_progressbar_frame, orientation="vertical")
-        # self.progressbar_3.grid(row=0, column=2, rowspan=5, padx=(10, 20), pady=(10, 10), sticky="ns")
-
-        # # create scrollable frame
-        # self.scrollable_frame = customtkinter.CTkScrollableFrame(self, label_text="CTkScrollableFrame")
-        # self.scrollable_frame.grid(row=1, column=2, padx=(20, 0), pady=(20, 0), sticky="nsew")
-        # self.scrollable_frame.grid_columnconfigure(0, weight=1)
-        # self.scrollable_frame_switches = []
-        # for i in range(100):
-        #     switch = customtkinter.CTkSwitch(master=self.scrollable_frame, text=f"CTkSwitch {i}")
-        #     switch.grid(row=i, column=0, padx=10, pady=(0, 20))
-        #     self.scrollable_frame_switches.append(switch)
-
-        # # create checkbox and switch frame
-        # self.checkbox_slider_frame = customtkinter.CTkFrame(self)
-        # self.checkbox_slider_frame.grid(row=1, column=3, padx=(20, 20), pady=(20, 0), sticky="nsew")
-        # self.checkbox_1 = customtkinter.CTkCheckBox(master=self.checkbox_slider_frame)
-        # self.checkbox_1.grid(row=1, column=0, pady=(20, 0), padx=20, sticky="n")
-        # self.checkbox_2 = customtkinter.CTkCheckBox(master=self.checkbox_slider_frame)
-        # self.checkbox_2.grid(row=2, column=0, pady=(20, 0), padx=20, sticky="n")
-        # self.checkbox_3 = customtkinter.CTkCheckBox(master=self.checkbox_slider_frame)
-        # self.checkbox_3.grid(row=3, column=0, pady=20, padx=20, sticky="n")
-
-        # # set default values
-        # self.checkbox_3.configure(state="disabled")
-        # self.checkbox_1.select()
-        # self.scrollable_frame_switches[0].select()
-        # self.scrollable_frame_switches[4].select()
-        # self.radio_button_3.configure(state="disabled")
+        
+        # CONFIGURATIONS
         self.appearance_mode_optionemenu.set("Dark")
         self.scaling_optionemenu.set("100%")
         self.display_data_treeview()
@@ -375,29 +253,23 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         if (self.fetchfilerecord()[0][0] != ""):
             if (".xlsx" in self.fetchfilerecord()[0][0]) or (".xls" in self.fetchfilerecord()[0][0]):
-                self.link_file.configure(fg_color="#059142", hover_color="#03692f")
+                self.link_file.configure(fg_color="#059142", hover_color="#03692f", text=f"{Path(self.fetchfilerecord()[0][0]).name}")
             else:
                 self.link_file.configure(fg_color="#F05316", hover_color="#b52d21")
         else:
-            self.link_file.configure(fg_color="#1f538d", hover_color="#14375e")
-
-        self.terminal_tree.grid_remove()
-        self.masterlist_frame.grid_remove()
-        self.edit_masterlist_frame1.grid_remove()
-        self.edit_masterlist_frame2.grid_remove()
-        self.masterlLabel_frame.grid_remove()
-        # self.optionmenu_1.set("CTkOptionmenu")
-        # self.combobox_1.set("CTkComboBox")
-        # self.slider_1.configure(command=self.progressbar_2.set)
-        # self.slider_2.configure(command=self.progressbar_3.set)
-        # self.progressbar_1.configure(mode="indeterminnate")
-        # self.progressbar_1.start()
+            self.link_file.configure(fg_color="#1f538d", hover_color="#14375e", text="Open Excel file..")
+        
         self.notebook.insert("0.0", "Attendance Notepad\n\n" + "Late Comers:\n  - \n  - \n  - \n  - \n\nClass Notes:")
-        # self.seg_button_1.configure(values=["CTkSegmentedButton", "Value 2", "Value 3"])
-        # self.seg_button_1.set("Value 2")
+        self.attendance_frame.grid_remove()
+        self.attendance_tool_frame.grid_remove()
+        self.notebook.grid_remove()
+        self.link_file.grid_remove()
+        self.generate_report_button.grid_remove()
 
 
 
+
+    # FUNCTIONS
     def get_checkbox_values(self):
         children_widgets = self.attendance_frame.winfo_children()
         checkbox_values = []
@@ -432,11 +304,11 @@ class App(customtkinter.CTk, tkinter.Tk):
         
         if (self.fetchfilerecord()[0][0] != ""):
             if (".xlsx" in self.fetchfilerecord()[0][0]) or (".xls" in self.fetchfilerecord()[0][0]):
-                self.link_file.configure(fg_color="#059142", hover_color="#03692f")
+                self.link_file.configure(fg_color="#059142", hover_color="#03692f", text=f"{Path(self.fetchfilerecord()[0][0]).name}")
             else:
                 self.link_file.configure(fg_color="#F05316", hover_color="#b52d21")
         else:
-            self.link_file.configure(fg_color="#1f538d", hover_color="#14375e")
+            self.link_file.configure(fg_color="#1f538d", hover_color="#14375e", text="Open Excel file..")
         
 
     def incr_chr(self, c):
@@ -586,22 +458,62 @@ class App(customtkinter.CTk, tkinter.Tk):
 
             print("DONE")
         else:
-            messagebox.showerror(title="AKASHIC", message="Please select an excel file before generate report")
+            messagebox.showerror(title="AKASHIC", message="Please select an excel file before generating a report")
         
+    
+    # View First Panel (Masterlist)
+    def masterlist(self):
+        self.terminal_tree.grid()
+        self.masterlist_frame.grid()
+        self.edit_masterlist_frame1.grid()
+        self.edit_masterlist_frame2.grid()
+        self.masterlLabel_frame.grid()
 
-    # def masterlist(self):
-    #     self.terminal_tree.grid()
-    #     self.masterlist_frame.grid()
-    #     self.edit_masterlist_frame1.grid()
-    #     self.edit_masterlist_frame2.grid()
-    #     self.masterlLabel_frame.grid()
+        self.attendance_frame.grid_remove()
+        self.attendance_tool_frame.grid_remove()
+        self.notebook.grid_remove()
+        self.link_file.grid_remove()
+        self.generate_report_button.grid_remove()
 
-    # def records(self):
-    #     self.terminal_tree.grid_remove()
-    #     self.masterlist_frame.grid_remove()
-    #     self.edit_masterlist_frame1.grid_remove()
-    #     self.edit_masterlist_frame2.grid_remove()
-    #     self.masterlLabel_frame.grid_remove()
+        self.sidebar_button_1.configure(fg_color="#14375e")
+        self.sidebar_button_2.configure(fg_color="#1f538d", hover_color="#14375e")
+
+    # View Second Panel (Checklist)
+    def records(self):
+        self.terminal_tree.grid_remove()
+        self.masterlist_frame.grid_remove()
+        self.edit_masterlist_frame1.grid_remove()
+        self.edit_masterlist_frame2.grid_remove()
+        self.masterlLabel_frame.grid_remove()
+
+        self.attendance_frame.grid()
+        self.attendance_tool_frame.grid()
+        self.notebook.grid()
+        self.link_file.grid()
+        self.generate_report_button.grid()
+
+        self.sidebar_button_1.configure(fg_color="#1f538d", hover_color="#14375e")
+        self.sidebar_button_2.configure(fg_color="#14375e")
+
+        # Generate checklist
+        self.student_roll =  self.fetchdb()
+        self.student_rows = -1
+
+        self.attendance_roll = []
+        for stnum, name, section, space, status in self.student_roll:
+            self.student_rows += 1
+            student = customtkinter.CTkCheckBox(self.attendance_frame, text=f"  {name}", border_color="red", border_width=1, onvalue="present", offvalue="absent")
+            student.grid(row=self.student_rows, column=0, padx=(15, 0), pady=(0, 15), sticky="w")
+            st_num = customtkinter.CTkLabel(self.attendance_frame, text=f"{stnum}")
+            st_num.grid(row=self.student_rows, column=1, padx=(0, 30), pady=(0, 15), sticky="w")
+            st_section = customtkinter.CTkLabel(self.attendance_frame, text=f"{section}")
+            st_section.grid(row=self.student_rows, column=2, padx=(5, 50), pady=(0, 15), sticky="w")
+            empty_desc1 = customtkinter.CTkLabel(self.attendance_frame, text=f"--")
+            empty_desc1.grid(row=self.student_rows, column=3, padx=(15, 50), pady=(0, 15), sticky="nsew")
+            self.attendance_roll.append(student)
+            self.attendance_roll.append(st_num)
+            self.attendance_roll.append(st_section)
+            self.attendance_roll.append(empty_desc1)
     
     def clear_entry(self):
         self.name_entry.delete(0, END)
@@ -793,7 +705,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.remove_view_content()
 
         # Reenable other button features
-        self.add_button.configure(state="normal", fg_color="#059142")
+        self.add_button.configure(state="normal", fg_color="#059142" ,hover_color="#03692f")
         self.clear_button.configure(state="normal", fg_color="#1f538d")
         self.sort_button.configure(state="normal", fg_color="#1f538d")
         self.delete_button.configure(state="normal")
