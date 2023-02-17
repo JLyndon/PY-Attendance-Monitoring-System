@@ -412,7 +412,7 @@ class App(customtkinter.CTk, tkinter.Tk):
             filetypes= filetypes)
         
         return print(filename)
-    
+
     def incr_chr(self, c):
         return chr(ord(c) + 1) if c != 'Z' else 'A'
 
@@ -442,7 +442,7 @@ class App(customtkinter.CTk, tkinter.Tk):
             sheet_cell = sheet_obj[f"{counter}3"]
             if sheet_cell.value == None:
                 column = counter
-                return print(column)
+                return column
             else:
                 counter = self.increment_column(counter)
 
@@ -453,22 +453,56 @@ class App(customtkinter.CTk, tkinter.Tk):
         
         return sheet_obj
 
-        # acquired_names, acquired_attendance = self.get_checkbox_values()
+    def check_name_column(self, active_sheet):
+        if active_sheet["A3"] != None:
+            if (messagebox.askyesno(title="AKASHIC", message="Do you want to update student names?")):
+                return True
+            else:
+                return False
+        else:
+            return True
+    
+    def check_date_row(self, _sheet, data):
+        column = "B"
+        while True:
+            sheet_cell = _sheet[f"{column}2"]
+            if sheet_cell.value == None:
+                break
+            elif sheet_cell.value == data:
+                break
+            else:
+                column = self.increment_column(column)
+
+        while True:
+            if _sheet[f"{column}2"] != None:
+                if _sheet[f"{column}2"] != data:
+                    if (messagebox.askyesno(title="AKASHIC", message=f"Do you want to update records of '{data}'?")):
+                        return True
+                    else:
+                        return False
+                else:
+                    return True
+            else:
+                return True
 
 
-    def dummy(self):
-        student_list = self.fetchdb()
-        for thing in student_list:
-            return
-        self.key_unordered_data = []
-        for data in self.unordered_dataset:
-            for specific in data:
-                if specific == data[1]:
-                    self.key_unordered_data.append(specific)
-        # for i in range(100):
-        #     switch = customtkinter.CTkSwitch(master=self.scrollable_frame, text=f"CTkSwitch {i}")
-        #     switch.grid(row=i, column=0, padx=10, pady=(0, 20))
-        #     self.scrollable_frame_switches.append(switch)
+    def write_in_excel(self):
+        sheet = self.open_excel
+        available_column = self.check_for_available_column()
+        acquired_names, acquired_attendance = self.get_checkbox_values()
+        input_date = self.date_entry.get()
+        
+        if (self.check_name_column(sheet)):
+            for num in range(len(acquired_names)):
+                cell = sheet[f"A{num + 3}"]
+                cell.value = acquired_names[num]
+
+        
+        # for item in 
+        return
+    
+        
+
     # def masterlist(self):
     #     self.terminal_tree.grid()
     #     self.masterlist_frame.grid()
@@ -501,6 +535,7 @@ class App(customtkinter.CTk, tkinter.Tk):
                 self.clear_entry()
                 self.display_data_treeview()
     
+    # Fetch data from data bases
     def fetchdb(self):
         cursor.execute("SELECT * FROM ATTENDANCE")
         datalist = cursor.fetchall()
