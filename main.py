@@ -6,6 +6,7 @@ from tkinter import filedialog as fd
 import customtkinter
 import sqlite3 
 import openpyxl
+from openpyxl.styles.alignment import Alignment
 from datetime import date
 
 customtkinter.set_appearance_mode("Dark") # Set to Dark mode
@@ -255,7 +256,7 @@ class App(customtkinter.CTk, tkinter.Tk):
             self.attendance_roll.append(st_section)
             self.attendance_roll.append(empty_desc1)
 
-        self.generate_report_button = customtkinter.CTkButton(self, text="GENERATE REPORT", fg_color="#05af4f", hover_color="#059142", command=self.write_in_excel)
+        self.generate_report_button = customtkinter.CTkButton(self, text="GENERATE REPORT", fg_color="#059142", hover_color="#03692f", command=self.write_in_excel)
         self.generate_report_button.grid(row=3, column=1, padx=(15, 15), pady=(12, 10), columnspan=3, sticky="nsew")
 
         # self.filler_frame = customtkinter.CTkFrame(self, height=50)
@@ -372,6 +373,14 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.sect_entry.insert(0, "BSCOE 2-6")
         self.sect_entry.configure(state="disabled", fg_color="#2b2c2e")
 
+        if (self.fetchfilerecord()[0][0] != ""):
+            if (".xlsx" in self.fetchfilerecord()[0][0]) or (".xls" in self.fetchfilerecord()[0][0]):
+                self.link_file.configure(fg_color="#059142", hover_color="#03692f")
+            else:
+                self.link_file.configure(fg_color="#F05316", hover_color="#b52d21")
+        else:
+            self.link_file.configure(fg_color="#1f538d", hover_color="#14375e")
+
         self.terminal_tree.grid_remove()
         self.masterlist_frame.grid_remove()
         self.edit_masterlist_frame1.grid_remove()
@@ -421,6 +430,14 @@ class App(customtkinter.CTk, tkinter.Tk):
             cursor_1.execute("INSERT INTO FILELOG VALUES(?,?)", [filename, f"{date.today()}"])
             tempdata.commit()
         
+        if (self.fetchfilerecord()[0][0] != ""):
+            if (".xlsx" in self.fetchfilerecord()[0][0]) or (".xls" in self.fetchfilerecord()[0][0]):
+                self.link_file.configure(fg_color="#059142", hover_color="#03692f")
+            else:
+                self.link_file.configure(fg_color="#F05316", hover_color="#b52d21")
+        else:
+            self.link_file.configure(fg_color="#1f538d", hover_color="#14375e")
+        
 
     def incr_chr(self, c):
         return chr(ord(c) + 1) if c != 'Z' else 'A'
@@ -444,10 +461,14 @@ class App(customtkinter.CTk, tkinter.Tk):
             increase = self.incr_str(str)
             return increase
 
-    def check_for_available_column(self, sheet):
-        counter = "A"
+    def check_for_available_column(self, sheet, row):
+        if (row == 1) or (row == 2):
+            counter = "B"
+        else:
+            counter = "A"
+
         while True:
-            sheet_cell = sheet[f"{counter}3"]
+            sheet_cell = sheet[f"{counter}{row}"]
             if sheet_cell.value == None:
                 return counter
             else:
@@ -512,12 +533,16 @@ class App(customtkinter.CTk, tkinter.Tk):
             date_column, update_or_not = self.check_date_row(sheet, input_date)
 
 
-            attendance_column = self.check_for_available_column(sheet)
+            attendance_column = self.check_for_available_column(sheet, 3)
             acquired_names, acquired_attendance = self.get_checkbox_values()
 
             previous_dataset = self.fetchnamerec()
             
             if (self.check_name_column(sheet, previous_dataset, filename)):
+                sheet["B1"].value = f"Attendance Record for {self.course_entry.get()}"
+                sheet["B1"].alignment = Alignment(horizontal="center")
+                sheet.merge_cells("B1:G1")
+                sheet["I1"].value = f"Instructor: {self.instructor_name_entry.get()}"
                 for num in range(len(acquired_names)):
                     cell = sheet[f"A{num + 3}"]
                     cell.value = acquired_names[num]
@@ -526,19 +551,32 @@ class App(customtkinter.CTk, tkinter.Tk):
             for stored in previous_dataset:
                 if input_date in stored:
                     is_new_file = False
+                    break
             
             if is_new_file:
                 sheet[f"{date_column}2"].value = input_date
                 for item in range(len(acquired_attendance)):
-                    sheet[f"{date_column}{item + 3}"].value = acquired_attendance[item]
+                    sheet[f"{date_column}{item + 3}"].alignment = Alignment(horizontal="center")
+                    if acquired_attendance[item] == "present":
+                        sheet[f"{date_column}{item + 3}"].value = "/"
+                    elif acquired_attendance[item] == "absent":
+                        sheet[f"{date_column}{item + 3}"].value = "A"
                 # Message
             else:
                 if update_or_not:
                     for item in range(len(acquired_attendance)):
-                        sheet[f"{date_column}{item + 3}"].value = acquired_attendance[item]
+                        sheet[f"{date_column}{item + 3}"].alignment = Alignment(horizontal="center")
+                        if acquired_attendance[item] == "present":
+                            sheet[f"{date_column}{item + 3}"].value = "/"
+                        elif acquired_attendance[item] == "absent":
+                            sheet[f"{date_column}{item + 3}"].value = "A"
                 else:
                     for item in range(len(acquired_attendance)):
-                        sheet[f"{attendance_column}{item + 3}"].value = acquired_attendance[item]
+                        sheet[f"{date_column}{item + 3}"].alignment = Alignment(horizontal="center")
+                        if acquired_attendance[item] =="present":
+                            sheet[f"{attendance_column}{item + 3}"].value = "/"
+                        elif acquired_attendance[item] =="absent":
+                            sheet[f"{attendance_column}{item + 3}"].value = "A"
             
             if update_or_not == False:
                 cursor_1.execute("INSERT INTO RECORDDATE VALUES(?,?,?)", [input_date, date_column, filename])
