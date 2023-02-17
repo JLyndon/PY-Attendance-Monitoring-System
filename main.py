@@ -400,6 +400,11 @@ class App(customtkinter.CTk, tkinter.Tk):
         return checkbox_names, checkbox_values
 
     def select_file(self):
+        previous_file = self.fetchfilerecord()
+        if (len(previous_file) != 0) or (previous_file != []):
+            cursor_1.execute("DELETE FROM FILELOG WHERE Filename=?", [previous_file[0][0],])
+            tempdata.commit()
+
         filetypes = (
             ("Excel files", "*.xlsx"), 
             ("Excel files", "*.xls"), 
@@ -411,7 +416,11 @@ class App(customtkinter.CTk, tkinter.Tk):
             initialdir='/',
             filetypes= filetypes)
         
-        return filename
+        now_record = self.fetchfilerecord()
+        if len(now_record) == 0:
+            cursor_1.execute("INSERT INTO FILELOG VALUES(?,?)", [filename, f"{date.today()}"])
+            tempdata.commit()
+        
 
     def incr_chr(self, c):
         return chr(ord(c) + 1) if c != 'Z' else 'A'
@@ -445,11 +454,16 @@ class App(customtkinter.CTk, tkinter.Tk):
                 counter = self.increment_column(counter)
 
     def open_excel(self):
-        selected_file = "C:/Users/ycoly/Desktop/LYNDON's/First Semester College_Y2/DSA/PY-Attendance-Monitoring-System/Sample.xlsx" #self.select_file()
-        workbook_obj = openpyxl.load_workbook(selected_file)
-        sheet_obj = workbook_obj.active
-        
-        return selected_file, sheet_obj
+        fetch_file_logs = self.fetchfilerecord()
+        selected_file = fetch_file_logs[0][0]
+
+        if (".xlsx" in selected_file) or (".xls" in selected_file):
+            workbook_obj = openpyxl.load_workbook(selected_file)
+            sheet_obj = workbook_obj.active
+            
+            return selected_file, sheet_obj, workbook_obj
+        else:
+            return "not an excel file", "not an excel file", "not an excel file"
 
     def check_name_column(self, active_sheet, reference, file):
         ask_for_name_update = False
@@ -457,7 +471,7 @@ class App(customtkinter.CTk, tkinter.Tk):
             if file in data:
                 ask_for_name_update = True
 
-        if active_sheet["A3"] != None:
+        if (active_sheet["A3"].value != None) or (active_sheet["A3"].value != ""):
             if ask_for_name_update:
                 if (messagebox.askyesno(title="AKASHIC", message="Students are being updated. Proceed?")):
                     return True
@@ -479,8 +493,8 @@ class App(customtkinter.CTk, tkinter.Tk):
             else:
                 column = self.increment_column(column)
 
-        if (_sheet[f"{column}2"] != None) or (_sheet[f"{column}2"] != ""):
-            if _sheet[f"{column}2"] == data:
+        if (_sheet[f"{column}2"].value != None) or (_sheet[f"{column}2"].value != ""):
+            if _sheet[f"{column}2"].value == data:
                 if (messagebox.askyesno(title="AKASHIC", message=f"Do you want to update records of '{data}'?")):
                     return column, True
                 else:
@@ -492,43 +506,49 @@ class App(customtkinter.CTk, tkinter.Tk):
 
 
     def write_in_excel(self):
-        filename, sheet = self.open_excel()
-        input_date = self.date_entry.get()
-        date_column, update_or_not = self.check_date_row(sheet, input_date)
+        filename, sheet, book = self.open_excel()
+        if filename != "not an excel file":
+            input_date = self.date_entry.get()
+            date_column, update_or_not = self.check_date_row(sheet, input_date)
 
 
-        attendance_column = self.check_for_available_column(sheet)
-        acquired_names, acquired_attendance = self.get_checkbox_values()
+            attendance_column = self.check_for_available_column(sheet)
+            acquired_names, acquired_attendance = self.get_checkbox_values()
 
-        previous_dataset = self.fetchupdates()
-        
-        if (self.check_name_column(sheet, previous_dataset, filename)):
-            for num in range(len(acquired_names)):
-                cell = sheet[f"A{num + 3}"]
-                cell.value = acquired_names[num]
+            previous_dataset = self.fetchnamerec()
+            
+            if (self.check_name_column(sheet, previous_dataset, filename)):
+                for num in range(len(acquired_names)):
+                    cell = sheet[f"A{num + 3}"]
+                    cell.value = acquired_names[num]
 
-        is_new_file = True
-        for stored in previous_dataset:
-            if input_date in stored:
-                is_new_file = False
-        
-        if is_new_file:
-            sheet[f"{date_column}2"].value = input_date
-            for item in range(len(acquired_attendance)):
-                sheet[f"{date_column}{item + 3}"].value = acquired_attendance[item]
-            # Message
-        else:
-            if update_or_not:
+            is_new_file = True
+            for stored in previous_dataset:
+                if input_date in stored:
+                    is_new_file = False
+            
+            if is_new_file:
+                sheet[f"{date_column}2"].value = input_date
                 for item in range(len(acquired_attendance)):
                     sheet[f"{date_column}{item + 3}"].value = acquired_attendance[item]
+                # Message
             else:
-                for item in range(len(acquired_attendance)):
-                    sheet[f"{attendance_column}{item + 3}"].value = acquired_attendance[item]
+                if update_or_not:
+                    for item in range(len(acquired_attendance)):
+                        sheet[f"{date_column}{item + 3}"].value = acquired_attendance[item]
+                else:
+                    for item in range(len(acquired_attendance)):
+                        sheet[f"{attendance_column}{item + 3}"].value = acquired_attendance[item]
+            
+            if update_or_not == False:
+                cursor_1.execute("INSERT INTO RECORDDATE VALUES(?,?,?)", [input_date, date_column, filename])
+                tempdata.commit()
 
-        cursor_1.execute("INSERT INTO RECORDDATE VALUES(?,?,?)", [input_date, date_column, filename])
-        tempdata.commit()
+            book.save(filename)
 
-        print("DONE")
+            print("DONE")
+        else:
+            messagebox.showerror(title="AKASHIC", message="Please select an excel file before generate report")
         
 
     # def masterlist(self):
@@ -571,6 +591,16 @@ class App(customtkinter.CTk, tkinter.Tk):
     
     def fetchupdates(self):
         cursor_1.execute("SELECT * FROM UPDATES")
+        updatelist = cursor_1.fetchall()
+        return updatelist
+    
+    def fetchfilerecord(self):
+        cursor_1.execute("SELECT * FROM FILELOG")
+        updatelist = cursor_1.fetchall()
+        return updatelist
+    
+    def fetchnamerec(self):
+        cursor_1.execute("SELECT * FROM RECORDDATE")
         updatelist = cursor_1.fetchall()
         return updatelist
     
@@ -761,6 +791,7 @@ tempdata = sqlite3.connect("Updates.db")
 cursor_1 = tempdata.cursor()
 cursor_1.execute("CREATE TABLE IF NOT EXISTS UPDATES (Row Integer, StudentNum Integer, Name Text, CourseYS Text, Space Text, Status Text)")
 cursor_1.execute("CREATE TABLE IF NOT EXISTS RECORDDATE (Date Text, Column Text, Filename Text)")
+cursor_1.execute("CREATE TABLE IF NOT EXISTS FILELOG (Filename Text, DateAccessed Text)")
 
 
 if __name__ == "__main__":
