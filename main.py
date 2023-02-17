@@ -741,6 +741,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         customtkinter.set_widget_scaling(new_scaling_float)
 
 
+# Data bases
 databs = sqlite3.connect("Course_Attendance.db", isolation_level=None)
 cursor = databs.cursor()
 cursor.execute("CREATE TABLE IF NOT EXISTS ATTENDANCE (StudentNum Integer, Name Text, CourseYS Text, Space Text, Status Text)")
@@ -752,6 +753,7 @@ cursor_1.execute("CREATE TABLE IF NOT EXISTS RECORDDATE (Date Text, Column Text,
 cursor_1.execute("CREATE TABLE IF NOT EXISTS FILELOG (Filename Text, DateAccessed Text)")
 
 
+# Main
 if __name__ == "__main__":
     app = App()
     app.mainloop()
