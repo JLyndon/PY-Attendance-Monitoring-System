@@ -460,7 +460,7 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         if active_sheet["A3"] != None:
             if ask_for_name_update:
-                if (messagebox.askyesno(title="AKASHIC", message="Do you want to update student names?")):
+                if (messagebox.askyesno(title="AKASHIC", message="Students are being updated. Proceed?")):
                     return True
                 else:
                     return False
@@ -506,18 +506,26 @@ class App(customtkinter.CTk, tkinter.Tk):
                 cell = sheet[f"A{num + 3}"]
                 cell.value = acquired_names[num]
 
-        excel_config = []
+        is_new_file = True
         for stored in previous_dataset:
             if input_date in stored:
-                None
-
+                is_new_file = False
         
-
+        if is_new_file:
+            sheet[f"{date_column}2"].value = input_date
+            for item in range(len(acquired_attendance)):
+                sheet[f"{date_column}{item + 3}"].value = acquired_attendance[item]
+            # Message
+        else:
+            if update_or_not:
+                for item in range(len(acquired_attendance)):
+                    sheet[f"{date_column}{item + 3}"].value = acquired_attendance[item]
+            else:
+                for item in range(len(acquired_attendance)):
+                    sheet[f"{attendance_column}{item + 3}"].value = acquired_attendance[item]
 
         cursor_1.execute("INSERT INTO RECORDDATE VALUES(?,?,?)", [input_date, date_column, filename])
         tempdata.commit()
-        return
-    
         
 
     # def masterlist(self):
