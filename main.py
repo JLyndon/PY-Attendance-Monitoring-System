@@ -411,7 +411,7 @@ class App(customtkinter.CTk, tkinter.Tk):
             initialdir='/',
             filetypes= filetypes)
         
-        return print(filename)
+        return filename
 
     def incr_chr(self, c):
         return chr(ord(c) + 1) if c != 'Z' else 'A'
@@ -441,8 +441,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         while True:
             sheet_cell = sheet_obj[f"{counter}3"]
             if sheet_cell.value == None:
-                column = counter
-                return column
+                return counter
             else:
                 counter = self.increment_column(counter)
 
@@ -451,54 +450,72 @@ class App(customtkinter.CTk, tkinter.Tk):
         workbook_obj = openpyxl.load_workbook(selected_file)
         sheet_obj = workbook_obj.active
         
-        return sheet_obj
+        return selected_file, sheet_obj
 
-    def check_name_column(self, active_sheet):
+    def check_name_column(self, active_sheet, reference, file):
+        ask_for_name_update = False
+        for data in reference:
+            if file in data:
+                ask_for_name_update = True
+
         if active_sheet["A3"] != None:
-            if (messagebox.askyesno(title="AKASHIC", message="Do you want to update student names?")):
-                return True
+            if ask_for_name_update:
+                if (messagebox.askyesno(title="AKASHIC", message="Do you want to update student names?")):
+                    return True
+                else:
+                    return False
             else:
-                return False
+                return True
         else:
             return True
     
     def check_date_row(self, _sheet, data):
         column = "B"
+
         while True:
-            sheet_cell = _sheet[f"{column}2"]
-            if sheet_cell.value == None:
+            if _sheet[f"{column}2"].value == None:
                 break
-            elif sheet_cell.value == data:
+            elif _sheet[f"{column}2"].value == data:
                 break
             else:
                 column = self.increment_column(column)
 
-        while True:
-            if _sheet[f"{column}2"] != None:
-                if _sheet[f"{column}2"] != data:
-                    if (messagebox.askyesno(title="AKASHIC", message=f"Do you want to update records of '{data}'?")):
-                        return True
-                    else:
-                        return False
+        if _sheet[f"{column}2"] != None:
+            if _sheet[f"{column}2"] == data:
+                if (messagebox.askyesno(title="AKASHIC", message=f"Do you want to update records of '{data}'?")):
+                    return column, True
                 else:
-                    return True
-            else:
-                return True
+                    return column, False
+        else:
+            return column, True
 
 
     def write_in_excel(self):
-        sheet = self.open_excel
-        available_column = self.check_for_available_column()
-        acquired_names, acquired_attendance = self.get_checkbox_values()
+        filename, sheet = self.open_excel()
         input_date = self.date_entry.get()
+        date_column, update_or_not = self.check_date_row(sheet, input_date)
+
+
+        attendance_column = self.check_for_available_column()
+        acquired_names, acquired_attendance = self.get_checkbox_values()
+
+        previous_dataset = self.fetchupdates()
         
-        if (self.check_name_column(sheet)):
+        if (self.check_name_column(sheet, previous_dataset, filename)):
             for num in range(len(acquired_names)):
                 cell = sheet[f"A{num + 3}"]
                 cell.value = acquired_names[num]
 
+        excel_config = []
+        for stored in previous_dataset:
+            if input_date in stored:
+                None
+
         
-        # for item in 
+
+
+        cursor_1.execute("INSERT INTO RECORDDATE VALUES(?,?,?)", [input_date, date_column, filename])
+        tempdata.commit()
         return
     
         
@@ -732,6 +749,7 @@ cursor.execute("CREATE TABLE IF NOT EXISTS ATTENDANCE (StudentNum Integer, Name 
 tempdata = sqlite3.connect("Updates.db")
 cursor_1 = tempdata.cursor()
 cursor_1.execute("CREATE TABLE IF NOT EXISTS UPDATES (Row Integer, StudentNum Integer, Name Text, CourseYS Text, Space Text, Status Text)")
+cursor_1.execute("CREATE TABLE IF NOT EXISTS RECORDDATE (Date Text, Column Text, Filename Text)")
 
 
 if __name__ == "__main__":
