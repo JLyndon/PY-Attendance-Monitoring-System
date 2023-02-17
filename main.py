@@ -255,7 +255,7 @@ class App(customtkinter.CTk, tkinter.Tk):
             self.attendance_roll.append(st_section)
             self.attendance_roll.append(empty_desc1)
 
-        self.generate_report_button = customtkinter.CTkButton(self, text="GENERATE REPORT", fg_color="#05af4f", hover_color="#059142", command=self.check_for_available_column)
+        self.generate_report_button = customtkinter.CTkButton(self, text="GENERATE REPORT", fg_color="#05af4f", hover_color="#059142", command=self.write_in_excel)
         self.generate_report_button.grid(row=3, column=1, padx=(15, 15), pady=(12, 10), columnspan=3, sticky="nsew")
 
         # self.filler_frame = customtkinter.CTkFrame(self, height=50)
@@ -435,11 +435,10 @@ class App(customtkinter.CTk, tkinter.Tk):
             increase = self.incr_str(str)
             return increase
 
-    def check_for_available_column(self):
-        sheet_obj = self.open_excel()
+    def check_for_available_column(self, sheet):
         counter = "A"
         while True:
-            sheet_cell = sheet_obj[f"{counter}3"]
+            sheet_cell = sheet[f"{counter}3"]
             if sheet_cell.value == None:
                 return counter
             else:
@@ -480,14 +479,16 @@ class App(customtkinter.CTk, tkinter.Tk):
             else:
                 column = self.increment_column(column)
 
-        if _sheet[f"{column}2"] != None:
+        if (_sheet[f"{column}2"] != None) or (_sheet[f"{column}2"] != ""):
             if _sheet[f"{column}2"] == data:
                 if (messagebox.askyesno(title="AKASHIC", message=f"Do you want to update records of '{data}'?")):
                     return column, True
                 else:
                     return column, False
+            else:
+                return column, False
         else:
-            return column, True
+            return column, False
 
 
     def write_in_excel(self):
@@ -496,7 +497,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         date_column, update_or_not = self.check_date_row(sheet, input_date)
 
 
-        attendance_column = self.check_for_available_column()
+        attendance_column = self.check_for_available_column(sheet)
         acquired_names, acquired_attendance = self.get_checkbox_values()
 
         previous_dataset = self.fetchupdates()
@@ -526,6 +527,8 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         cursor_1.execute("INSERT INTO RECORDDATE VALUES(?,?,?)", [input_date, date_column, filename])
         tempdata.commit()
+
+        print("DONE")
         
 
     # def masterlist(self):
