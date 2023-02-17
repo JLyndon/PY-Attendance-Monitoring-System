@@ -255,7 +255,7 @@ class App(customtkinter.CTk, tkinter.Tk):
             self.attendance_roll.append(st_section)
             self.attendance_roll.append(empty_desc1)
 
-        self.generate_report_button = customtkinter.CTkButton(self, text="GENERATE REPORT", fg_color="#05af4f", hover_color="#059142", command=self.get_checkbox_values)
+        self.generate_report_button = customtkinter.CTkButton(self, text="GENERATE REPORT", fg_color="#05af4f", hover_color="#059142", command=self.check_for_available_column)
         self.generate_report_button.grid(row=3, column=1, padx=(15, 15), pady=(12, 10), columnspan=3, sticky="nsew")
 
         # self.filler_frame = customtkinter.CTkFrame(self, height=50)
@@ -411,14 +411,50 @@ class App(customtkinter.CTk, tkinter.Tk):
             initialdir='/',
             filetypes= filetypes)
         
-        return filename
+        return print(filename)
+    
+    def incr_chr(self, c):
+        return chr(ord(c) + 1) if c != 'Z' else 'A'
 
-    def paste_data_to_excel(self):
-        selected_file = self.select_file()
+    def incr_str(self, s):
+        lpart = s.rstrip('Z')
+        num_replacements = len(s) - len(lpart)
+        new_s = lpart[:-1] + self.incr_chr(lpart[-1]) if lpart else 'A'
+        new_s += 'A' * num_replacements
+        return new_s
+
+    def increment_column(self, str):
+        if (len(str) < 2):
+            if (str != 'Z'):
+                new_char = self.incr_chr(str)
+                return new_char
+            elif (str == 'Z'):
+                new_str = self.incr_str(str)
+                return new_str
+        else:
+            increase = self.incr_str(str)
+            return increase
+
+    def check_for_available_column(self):
+        sheet_obj = self.open_excel()
+        counter = "A"
+        while True:
+            sheet_cell = sheet_obj[f"{counter}3"]
+            if sheet_cell.value == None:
+                column = counter
+                return print(column)
+            else:
+                counter = self.increment_column(counter)
+
+    def open_excel(self):
+        selected_file = "C:/Users/ycoly/Desktop/LYNDON's/First Semester College_Y2/DSA/PY-Attendance-Monitoring-System/Sample.xlsx" #self.select_file()
         workbook_obj = openpyxl.load_workbook(selected_file)
         sheet_obj = workbook_obj.active
+        
+        return sheet_obj
 
-        return
+        # acquired_names, acquired_attendance = self.get_checkbox_values()
+
 
     def dummy(self):
         student_list = self.fetchdb()
