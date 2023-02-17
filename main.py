@@ -636,8 +636,15 @@ class App(customtkinter.CTk, tkinter.Tk):
                 if item in group:
                     self.ordered_dataset.append(group)
 
+        # Order permanence
+        cursor.execute("DELETE FROM ATTENDANCE")
+        cursor.execute("VACUUM")
+        databs.commit()
         self.terminal_tree.delete(*self.terminal_tree.get_children())
+
         for item in self.ordered_dataset:
+            cursor.execute("INSERT INTO ATTENDANCE VALUES(?,?,?,?,?)", item)
+            databs.commit()
             self.terminal_tree.insert("", END, values=item)
 
     def update_panel(self):
@@ -734,7 +741,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         customtkinter.set_widget_scaling(new_scaling_float)
 
 
-databs = sqlite3.connect("Course_Attendance.db")
+databs = sqlite3.connect("Course_Attendance.db", isolation_level=None)
 cursor = databs.cursor()
 cursor.execute("CREATE TABLE IF NOT EXISTS ATTENDANCE (StudentNum Integer, Name Text, CourseYS Text, Space Text, Status Text)")
 
