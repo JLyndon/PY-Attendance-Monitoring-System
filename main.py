@@ -1,3 +1,5 @@
+# AKASHIC - ATTENDANCE MONITORING
+
 import tkinter
 from tkinter import messagebox
 from tkinter import ttk
@@ -6,6 +8,7 @@ from tkinter import filedialog as fd
 import customtkinter
 import sqlite3 
 import openpyxl
+import os
 from openpyxl.styles.alignment import Alignment
 from pathlib import Path
 from datetime import date
@@ -253,10 +256,13 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.sidebar_button_1.configure(fg_color="#14375e")
 
         if (self.fetchfilerecord()[0][0] != ""):
-            if (".xlsx" in self.fetchfilerecord()[0][0]) or (".xls" in self.fetchfilerecord()[0][0]):
-                self.link_file.configure(fg_color="#059142", hover_color="#03692f", text=f"{Path(self.fetchfilerecord()[0][0]).name}")
+            if os.path.isfile(self.fetchfilerecord()[0][0]):
+                if (".xlsx" in self.fetchfilerecord()[0][0]) or (".xls" in self.fetchfilerecord()[0][0]):
+                    self.link_file.configure(fg_color="#059142", hover_color="#03692f", text=f"{Path(self.fetchfilerecord()[0][0]).name}")
+                else:
+                    self.link_file.configure(fg_color="#F05316", hover_color="#b52d21")
             else:
-                self.link_file.configure(fg_color="#F05316", hover_color="#b52d21")
+                self.link_file.configure(fg_color="#1f538d", hover_color="#14375e", text="Open Excel file..")
         else:
             self.link_file.configure(fg_color="#1f538d", hover_color="#14375e", text="Open Excel file..")
         
@@ -335,7 +341,7 @@ class App(customtkinter.CTk, tkinter.Tk):
             return increase
 
     def check_for_available_column(self, sheet, row):
-        if (row == 1) or (row == 2):
+        if row >= 2:
             counter = "B"
         else:
             counter = "A"
@@ -351,11 +357,14 @@ class App(customtkinter.CTk, tkinter.Tk):
         fetch_file_logs = self.fetchfilerecord()
         selected_file = fetch_file_logs[0][0]
 
-        if (".xlsx" in selected_file) or (".xls" in selected_file):
-            workbook_obj = openpyxl.load_workbook(selected_file)
-            sheet_obj = workbook_obj.active
-            
-            return selected_file, sheet_obj, workbook_obj
+        if os.path.isfile(selected_file):
+            if (".xlsx" in selected_file) or (".xls" in selected_file):
+                workbook_obj = openpyxl.load_workbook(selected_file)
+                sheet_obj = workbook_obj.active
+                
+                return selected_file, sheet_obj, workbook_obj
+            else:
+                return "not an excel file", "not an excel file", "not an excel file"
         else:
             return "not an excel file", "not an excel file", "not an excel file"
 
@@ -437,6 +446,7 @@ class App(customtkinter.CTk, tkinter.Tk):
                 # Message
             else:
                 if update_or_not:
+                    sheet[f"{date_column}2"].value = input_date
                     for item in range(len(acquired_attendance)):
                         sheet[f"{date_column}{item + 3}"].alignment = Alignment(horizontal="center")
                         if acquired_attendance[item] == "present":
@@ -444,8 +454,9 @@ class App(customtkinter.CTk, tkinter.Tk):
                         elif acquired_attendance[item] == "absent":
                             sheet[f"{date_column}{item + 3}"].value = "A"
                 else:
+                    sheet[f"{attendance_column}2"].value = input_date
                     for item in range(len(acquired_attendance)):
-                        sheet[f"{date_column}{item + 3}"].alignment = Alignment(horizontal="center")
+                        sheet[f"{attendance_column}{item + 3}"].alignment = Alignment(horizontal="center")
                         if acquired_attendance[item] =="present":
                             sheet[f"{attendance_column}{item + 3}"].value = "/"
                         elif acquired_attendance[item] =="absent":
